@@ -45,6 +45,19 @@ jobs:
             ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
             ghcr.io/${{ env.IMAGE_NAME }}:latest
 
+      - name: Install kubectl
+        run: |
+          if ! command -v kubectl &>/dev/null; then
+            curl -fsSL "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
+            chmod +x /usr/local/bin/kubectl
+          fi
+          kubectl version --client
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+
       - name: Deploy to K3s
         run: |
           # 매니페스트가 없으면 먼저 생성

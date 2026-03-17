@@ -4,11 +4,11 @@ set -e
 # PAT로 등록 토큰 자동 생성
 if [ -n "${GITHUB_PAT}" ] && [ -n "${RUNNER_REPOSITORY_URL}" ]; then
   REPO_PATH=$(echo "${RUNNER_REPOSITORY_URL}" | sed 's|https://github.com/||')
-  REG_TOKEN=$(curl -s -X POST \
+  RESPONSE=$(curl -s -X POST \
     -H "Authorization: token ${GITHUB_PAT}" \
     -H "Accept: application/vnd.github.v3+json" \
-    "https://api.github.com/repos/${REPO_PATH}/actions/runners/registration-token" \
-    | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
+    "https://api.github.com/repos/${REPO_PATH}/actions/runners/registration-token")
+  REG_TOKEN=$(echo "${RESPONSE}" | tr -d '\n' | sed 's/.*"token":"\([^"]*\)".*/\1/')
 
   if [ -z "${REG_TOKEN}" ]; then
     echo "ERROR: Failed to get registration token. Check GITHUB_PAT and RUNNER_REPOSITORY_URL."

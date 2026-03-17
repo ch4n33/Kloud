@@ -1,4 +1,4 @@
-# Self-hosted GitHub Actions runner
+# Self-hosted GitHub Actions runner (myoung34/github-runner)
 # PAT 기반 자동 등록 — 재시작 시에도 자동으로 재등록
 apiVersion: apps/v1
 kind: Deployment
@@ -20,19 +20,23 @@ spec:
         kubernetes.io/hostname: ch4n33-server
       containers:
         - name: runner
-          image: ghcr.io/ch4n33/kloud-runner:latest
+          image: myoung34/github-runner:latest
           env:
             - name: RUNNER_NAME
               value: kloud-ryzen
-            - name: RUNNER_REPOSITORY_URL
+            - name: RUNNER_SCOPE
+              value: repo
+            - name: REPO_URL
               value: https://github.com/ch4n33/Kloud
-            - name: RUNNER_LABELS
+            - name: LABELS
               value: kloud,self-hosted,linux,amd64
             - name: RUNNER_WORKDIR
               value: /tmp/runner
-            - name: DOCKER_HOST
-              value: unix:///var/run/docker.sock
-            - name: GITHUB_PAT
+            - name: DISABLE_AUTO_UPDATE
+              value: "true"
+            - name: REPLACE_EXISTING_RUNNER
+              value: "true"
+            - name: ACCESS_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: runner-secret
