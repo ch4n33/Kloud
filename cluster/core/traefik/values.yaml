@@ -1,0 +1,47 @@
+# Traefik 설치 (K3s 내장 비활성화 후 Helm으로 설치):
+#   helm repo add traefik https://traefik.github.io/charts
+#   helm install traefik traefik/traefik \
+#     -n traefik --create-namespace \
+#     -f values.yaml
+---
+# Ryzen에만 배치 (가장 강력한 노드)
+nodeSelector:
+  kloud/tier: heavy
+
+# LoadBalancer 타입 (MetalLB가 IP 할당)
+service:
+  type: LoadBalancer
+
+# 리소스 설정
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    memory: 256Mi
+
+# 대시보드 활성화
+ingressRoute:
+  dashboard:
+    enabled: true
+    # 보안을 위해 LAN에서만 접근 가능하도록 middleware 추가 권장
+
+# 로그 설정
+logs:
+  general:
+    level: INFO
+  access:
+    enabled: true
+
+# TLS 기본 설정
+ports:
+  web:
+    port: 8000
+    exposedPort: 80
+    protocol: TCP
+  websecure:
+    port: 8443
+    exposedPort: 443
+    protocol: TCP
+    tls:
+      enabled: true

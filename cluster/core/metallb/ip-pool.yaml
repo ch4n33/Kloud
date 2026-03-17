@@ -1,0 +1,23 @@
+# MetalLB 설치 후 적용:
+#   helm repo add metallb https://metallb.github.io/metallb
+#   helm install metallb metallb/metallb -n metallb-system
+#   kubectl apply -f ip-pool.yaml
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: kloud-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    # 실제 LAN 서브넷에 맞게 수정
+    - 192.168.50.200-192.168.50.220
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: kloud-l2
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - kloud-pool

@@ -1,0 +1,54 @@
+---
+# Kloud - K3s 설치 후 설정 (레이블, 검증)
+# 사용법: ansible-playbook playbooks/03-post-install.yml
+
+- name: K3s 설치 후 설정
+  hosts: server
+  become: true
+  tasks:
+    - name: 노드 목록 확인
+      command: kubectl get nodes -o wide
+      register: nodes_output
+      changed_when: false
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: 노드 상태 출력
+      debug:
+        msg: "{{ nodes_output.stdout_lines }}"
+
+    - name: 모든 노드 Ready 상태 대기 (최대 120초)
+      command: kubectl wait --for=condition=Ready nodes --all --timeout=120s
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: 워커 노드 레이블 적용
+      command: >
+        kubectl label node {{ item }}
+        node-role.kubernetes.io/worker=true
+        --overwrite
+      loop: "{{ groups['agents'] }}"
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: 시스템 Pod 상태 확인
+      command: kubectl get pods -A -o wide
+      register: pods_output
+      changed_when: false
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: 시스템 Pod 출력
+      debug:
+        msg: "{{ pods_output.stdout_lines }}"
+
+    - name: 클러스터 정보 출력
+      command: kubectl cluster-info
+      register: cluster_info
+      changed_when: false
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: 클러스터 정보
+      debug:
+        msg: "{{ cluster_info.stdout_lines }}"

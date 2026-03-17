@@ -1,0 +1,52 @@
+all:
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    k3s_version: "v1.31.4+k3s1"  # 설치 시 최신 안정 버전으로 변경
+    # 네트워크 설정 - 실제 환경에 맞게 수정
+    cluster_cidr: "10.42.0.0/16"
+    service_cidr: "10.43.0.0/16"
+    metallb_ip_range: "192.168.1.200-192.168.1.220"
+
+  children:
+    server:
+      hosts:
+        kloud-ryzen:
+          ansible_host: 192.168.50.18
+          ansible_user: ch4n33
+          node_labels:
+            - "kloud/tier=heavy"
+            - "kubernetes.io/arch=amd64"
+          node_tier: heavy
+
+    agents:
+      hosts:
+        kloud-pi1:
+          ansible_host: 192.168.50.167
+          node_labels:
+            - "kloud/tier=light"
+            - "kubernetes.io/arch=arm64"
+          node_tier: light
+        kloud-pi2:
+          ansible_host: 192.168.1.11  # 실제 IP로 변경
+          node_labels:
+            - "kloud/tier=light"
+            - "kubernetes.io/arch=arm64"
+          node_tier: light
+        kloud-pi3:
+          ansible_host: 192.168.1.12  # 실제 IP로 변경
+          node_labels:
+            - "kloud/tier=light"
+            - "kubernetes.io/arch=arm64"
+          node_tier: light
+
+    # Pi 노드 그룹 (SD 카드 보호 설정 적용 대상)
+    pis:
+      hosts:
+        kloud-pi1:
+        kloud-pi2:
+        kloud-pi3:
+
+    # Ryzen 노드 그룹
+    ryzen:
+      hosts:
+        kloud-ryzen:

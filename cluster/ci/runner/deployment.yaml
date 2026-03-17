@@ -1,0 +1,53 @@
+# Self-hosted GitHub Actions runner
+# PAT 기반 자동 등록 — 재시작 시에도 자동으로 재등록
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: github-runner
+  namespace: kloud-ci
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: github-runner
+  template:
+    metadata:
+      labels:
+        app: github-runner
+    spec:
+      serviceAccountName: github-runner
+      nodeSelector:
+        kubernetes.io/hostname: ch4n33-server
+      containers:
+        - name: runner
+          image: ghcr.io/ch4n33/kloud-runner:latest
+          env:
+            - name: RUNNER_NAME
+              value: kloud-ryzen
+            - name: RUNNER_REPOSITORY_URL
+              value: https://github.com/ch4n33/Kloud
+            - name: RUNNER_LABELS
+              value: kloud,self-hosted,linux,amd64
+            - name: RUNNER_WORKDIR
+              value: /tmp/runner
+            - name: DOCKER_HOST
+              value: unix:///var/run/docker.sock
+            - name: GITHUB_PAT
+              valueFrom:
+                secretKeyRef:
+                  name: runner-secret
+                  key: GITHUB_PAT
+          volumeMounts:
+            - name: docker-sock
+              mountPath: /var/run/docker.sock
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 250m
+            limits:
+              memory: 2Gi
+              cpu: 2000m
+      volumes:
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock

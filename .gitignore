@@ -1,0 +1,25 @@
+# Secrets and credentials
+*.key
+*.pem
+*.crt
+secrets/
+.env
+**/secret-*.yaml
+**/secret.yaml
+.credentials
+
+# K3s
+k3s-token
+kubeconfig
+
+# Ansible
+*.retry
+infrastructure/ansible/.vault_pass
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

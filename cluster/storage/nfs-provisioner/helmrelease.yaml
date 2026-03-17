@@ -1,0 +1,25 @@
+# NFS Subdir External Provisioner 설치:
+#   helm repo add nfs-subdir https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
+#   helm install nfs-provisioner nfs-subdir/nfs-subdir-external-provisioner \
+#     -f helmrelease.yaml
+---
+nfs:
+  server: 192.168.1.20  # Ryzen 서버 IP (실제 IP로 변경)
+  path: /srv/nfs/kloud
+
+storageClass:
+  name: nfs-kloud
+  defaultClass: false  # local-path를 기본으로 유지, 필요 시 true로 변경
+  reclaimPolicy: Retain
+  archiveOnDelete: true  # 삭제 시 데이터 보존 (archive-로 리네임)
+
+# Ryzen에서만 provisioner 실행
+nodeSelector:
+  kloud/tier: heavy
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    memory: 64Mi

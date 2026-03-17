@@ -1,0 +1,64 @@
+# replicas: 0 — 명함만 등록. 실행하려면: kubectl scale deployment minecraft -n kloud-apps --replicas=1
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minecraft
+  namespace: kloud-apps
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: minecraft
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: minecraft
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: ch4n33-server
+      containers:
+        - name: minecraft
+          image: itzg/minecraft-server
+          ports:
+            - containerPort: 25565
+          env:
+            - name: EULA
+              value: "TRUE"
+            - name: MEMORY
+              value: "12G"
+            - name: VERSION
+              value: "1.21.4"
+            - name: DIFFICULTY
+              value: "normal"
+            - name: TYPE
+              value: "PAPER"
+            - name: MOTD
+              value: "삣삐세여?\n삣삐에여.."
+            - name: OPS
+              value: "CH4N33,semc1031,Triple3T"
+            - name: WHITELIST
+              value: "CH4N33,semc1031,Triple3T"
+            - name: COPY_PLUGINS_SRC
+              value: "/plugins"
+            - name: ICON
+              value: "./data/server-icon.png"
+          volumeMounts:
+            - name: minecraft-data
+              mountPath: /data
+            - name: minecraft-plugins
+              mountPath: /plugins
+          resources:
+            requests:
+              memory: 4Gi
+              cpu: 1000m
+            limits:
+              memory: 12Gi
+      volumes:
+        - name: minecraft-data
+          persistentVolumeClaim:
+            claimName: minecraft-data-pvc
+        - name: minecraft-plugins
+          persistentVolumeClaim:
+            claimName: minecraft-plugins-pvc

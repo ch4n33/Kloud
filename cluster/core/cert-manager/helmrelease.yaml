@@ -1,0 +1,35 @@
+# cert-manager 설치:
+#   helm repo add jetstack https://charts.jetstack.io
+#   helm install cert-manager jetstack/cert-manager \
+#     -n cert-manager --create-namespace \
+#     -f helmrelease.yaml
+---
+installCRDs: true
+
+# Ryzen에 스케줄링 (선택사항, 어디서든 실행 가능)
+# nodeSelector:
+#   kubernetes.io/arch: amd64
+
+# 리소스 제한 (Pi에서 실행될 경우 대비)
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    memory: 64Mi
+
+webhook:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 16Mi
+    limits:
+      memory: 32Mi
+
+cainjector:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 128Mi

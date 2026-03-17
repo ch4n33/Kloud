@@ -1,0 +1,50 @@
+---
+# Kloud - K3s 에이전트(워커) 조인
+# 사용법: ansible-playbook playbooks/02-join-agents.yml
+#
+# 사전 조건: 01-install-server.yml이 먼저 실행되어야 한다.
+
+- name: 서버에서 토큰 가져오기
+  hosts: server
+  become: true
+  tasks:
+    - name: 노드 토큰 읽기
+      slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: k3s_token_raw
+
+    - name: 토큰을 fact로 저장
+      set_fact:
+        k3s_token: "{{ k3s_token_raw.content | b64decode | trim }}"
+
+- name: K3s 에이전트 조인
+  hosts: agents
+  become: true
+  vars:
+    k3s_server_ip: "{{ hostvars[groups['server'][0]]['ansible_host'] }}"
+    k3s_token: "{{ hostvars[groups['server'][0]]['k3s_token'] }}"
+  tasks:
+    - name: K3s 설치 스크립트 다운로드
+      get_url:
+        url: https://get.k3s.io
+        dest: /tmp/k3s-install.sh
+        mode: "0755"
+
+    - name: K3s 에이전트 설치 (Pi — 경량 워커)
+      environment:
+        K3S_URL: "https://{{ k3s_server_ip }}:6443"
+        K3S_TOKEN: "{{ k3s_token }}"
+        INSTALL_K3S_VERSION: "{{ k3s_version | default(omit) }}"
+      command: >
+        /tmp/k3s-install.sh agent
+        --node-label=kloud/tier={{ node_tier }}
+        --kubelet-arg=container-log-max-size=5Mi
+        --kubelet-arg=container-log-max-files=2
+      args:
+        creates: /etc/rancher/k3s/k3s-agent.yaml
+
+    - name: K3s 에이전트 서비스 확인
+      systemd:
+        name: k3s-agent
+        state: started
+        enabled: true

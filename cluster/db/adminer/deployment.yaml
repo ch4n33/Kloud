@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adminer
+  namespace: kloud-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adminer
+  template:
+    metadata:
+      labels:
+        app: adminer
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: ch4n33-server
+      containers:
+        - name: adminer
+          image: adminer:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 10m
+            limits:
+              memory: 128Mi

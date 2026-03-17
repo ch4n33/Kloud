@@ -1,0 +1,65 @@
+---
+# Kloud - K3s 서버(컨트롤 플레인) 설치
+# 사용법: ansible-playbook playbooks/01-install-server.yml
+
+- name: K3s 서버 설치
+  hosts: server
+  become: true
+  vars:
+    k3s_server_ip: "{{ ansible_host }}"
+  tasks:
+    - name: K3s 설치 스크립트 다운로드
+      get_url:
+        url: https://get.k3s.io
+        dest: /tmp/k3s-install.sh
+        mode: "0755"
+
+    - name: K3s 서버 설치 (Ryzen — 컨트롤 플레인 + 워커 겸용)
+      environment:
+        INSTALL_K3S_VERSION: "{{ k3s_version | default(omit) }}"
+      command: >
+        /tmp/k3s-install.sh server
+        --disable servicelb
+        --tls-san {{ k3s_server_ip }}
+        --tls-san {{ inventory_hostname }}
+        --node-label=kloud/tier=heavy
+        --write-kubeconfig-mode 644
+      args:
+        creates: /etc/rancher/k3s/k3s.yaml
+
+    - name: K3s 서비스 실행 확인
+      systemd:
+        name: k3s
+        state: started
+        enabled: true
+
+    - name: 노드 토큰 읽기
+      slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: k3s_token_raw
+
+    - name: 노드 토큰 저장
+      set_fact:
+        k3s_token: "{{ k3s_token_raw.content | b64decode | trim }}"
+
+    - name: kubeconfig 가져오기
+      fetch:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: "{{ playbook_dir }}/../../kubeconfig"
+        flat: true
+
+    - name: kubeconfig의 서버 주소 변경 (로컬)
+      delegate_to: localhost
+      become: false
+      replace:
+        path: "{{ playbook_dir }}/../../kubeconfig"
+        regexp: '127\.0\.0\.1'
+        replace: "{{ k3s_server_ip }}"
+
+    - name: 설치 정보 출력
+      debug:
+        msg:
+          - "K3s 서버 설치 완료"
+          - "서버 IP: {{ k3s_server_ip }}"
+          - "노드 토큰: {{ k3s_token }}"
+          - "kubeconfig: infrastructure/kubeconfig"

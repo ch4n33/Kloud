@@ -1,0 +1,187 @@
+---
+# Kloud - 노드 준비 플레이북
+# 사용법: ansible-playbook playbooks/00-prepare-nodes.yml
+#
+# 모든 노드에서 K3s 설치 전 OS 설정을 수행한다.
+
+- name: 공통 노드 준비
+  hosts: all
+  become: true
+  tasks:
+    - name: 호스트네임 설정
+      hostname:
+        name: "{{ inventory_hostname }}"
+
+    - name: /etc/hosts에 호스트네임 추가
+      lineinfile:
+        path: /etc/hosts
+        regexp: '^127\.0\.1\.1'
+        line: "127.0.1.1 {{ inventory_hostname }}"
+
+    - name: 패키지 업데이트
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: 필수 패키지 설치
+      apt:
+        name:
+          - curl
+          - nfs-common
+          - open-iscsi
+          - util-linux
+          - apt-transport-https
+          - ca-certificates
+          - gnupg
+        state: present
+
+    - name: swap 비활성화
+      command: swapoff -a
+      changed_when: false
+
+    - name: fstab에서 swap 제거
+      lineinfile:
+        path: /etc/fstab
+        regexp: '\sswap\s'
+        state: absent
+
+    - name: 커널 모듈 설정
+      copy:
+        content: |
+          br_netfilter
+          overlay
+        dest: /etc/modules-load.d/k3s.conf
+
+    - name: 커널 모듈 로드
+      modprobe:
+        name: "{{ item }}"
+      loop:
+        - br_netfilter
+        - overlay
+
+    - name: sysctl 설정
+      sysctl:
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+        sysctl_file: /etc/sysctl.d/99-k3s.conf
+        reload: true
+      loop:
+        - { key: "net.bridge.bridge-nf-call-iptables", value: "1" }
+        - { key: "net.bridge.bridge-nf-call-ip6tables", value: "1" }
+        - { key: "net.ipv4.ip_forward", value: "1" }
+
+- name: Pi 노드 SD 카드 보호
+  hosts: pis
+  become: true
+  tasks:
+    - name: dphys-swapfile 비활성화
+      systemd:
+        name: dphys-swapfile
+        state: stopped
+        enabled: false
+      ignore_errors: true
+
+    - name: cgroups 활성화 확인 (/boot/firmware/cmdline.txt)
+      lineinfile:
+        path: /boot/firmware/cmdline.txt
+        regexp: '^(.*?)(\s*$)'
+        line: '\1 cgroup_memory=1 cgroup_enable=memory'
+        backrefs: true
+      register: cmdline_firmware
+      ignore_errors: true
+
+    - name: cgroups 활성화 확인 (/boot/cmdline.txt fallback)
+      lineinfile:
+        path: /boot/cmdline.txt
+        regexp: '^(.*?)(\s*$)'
+        line: '\1 cgroup_memory=1 cgroup_enable=memory'
+        backrefs: true
+      when: cmdline_firmware is failed
+
+    - name: log2ram APT 키 추가
+      shell: |
+        curl -fsSL https://azlux.fr/repo.gpg.key | gpg --dearmor -o /usr/share/keyrings/azlux-archive-keyring.gpg
+      args:
+        creates: /usr/share/keyrings/azlux-archive-keyring.gpg
+
+    - name: log2ram APT 저장소 추가
+      copy:
+        content: "deb [signed-by=/usr/share/keyrings/azlux-archive-keyring.gpg] http://packages.azlux.fr/debian/ bookworm main\n"
+        dest: /etc/apt/sources.list.d/azlux.list
+
+    - name: log2ram 설치
+      apt:
+        name: log2ram
+        state: present
+        update_cache: true
+
+    - name: log2ram 크기 설정 (40MB)
+      lineinfile:
+        path: /etc/log2ram.conf
+        regexp: '^SIZE='
+        line: 'SIZE=40M'
+
+    - name: tmpfs 마운트 (/tmp)
+      mount:
+        path: /tmp
+        src: tmpfs
+        fstype: tmpfs
+        opts: defaults,noatime,nosuid,nodev,size=100M
+        state: mounted
+
+    - name: tmpfs 마운트 (/var/tmp)
+      mount:
+        path: /var/tmp
+        src: tmpfs
+        fstype: tmpfs
+        opts: defaults,noatime,nosuid,nodev,size=50M
+        state: mounted
+
+    - name: journald volatile 저장으로 변경
+      copy:
+        content: |
+          [Journal]
+          Storage=volatile
+          RuntimeMaxUse=30M
+        dest: /etc/systemd/journald.conf.d/sd-card.conf
+      notify: restart journald
+
+  handlers:
+    - name: restart journald
+      systemd:
+        name: systemd-journald
+        state: restarted
+
+- name: Ryzen NFS 서버 설정
+  hosts: ryzen
+  become: true
+  tasks:
+    - name: NFS 서버 설치
+      apt:
+        name: nfs-kernel-server
+        state: present
+
+    - name: NFS 공유 디렉토리 생성
+      file:
+        path: /srv/nfs/kloud
+        state: directory
+        owner: nobody
+        group: nogroup
+        mode: "0777"
+
+    - name: NFS exports 설정
+      lineinfile:
+        path: /etc/exports
+        regexp: '/srv/nfs/kloud'
+        line: '/srv/nfs/kloud *(rw,sync,no_subtree_check,no_root_squash)'
+      notify: reload nfs exports
+
+    - name: NFS 서버 활성화
+      systemd:
+        name: nfs-kernel-server
+        state: started
+        enabled: true
+
+  handlers:
+    - name: reload nfs exports
+      command: exportfs -ra
