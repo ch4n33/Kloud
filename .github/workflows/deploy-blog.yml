@@ -1,0 +1,75 @@
+name: Build and Deploy Blog
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/blog/**'
+      - 'cluster/apps/blog/**'
+      - '.github/workflows/deploy-blog.yml'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ch4n33/blog
+
+jobs:
+  build-and-deploy:
+    runs-on: [self-hosted, kloud]
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push multi-arch image
+        uses: docker/build-push-action@v6
+        with:
+          context: apps/blog
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ghcr.io/${{ env.IMAGE_NAME }}:latest
+
+      - name: Install kubectl
+        run: |
+          if ! command -v kubectl &>/dev/null; then
+            curl -fsSL "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
+            chmod +x /usr/local/bin/kubectl
+          fi
+          kubectl version --client
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+
+      - name: Deploy to K3s
+        run: |
+          # 매니페스트가 없으면 먼저 생성
+          kubectl get deployment blog -n kloud-apps 2>/dev/null || \
+            kubectl apply -f cluster/apps/blog/
+
+          # 이미지 업데이트
+          kubectl set image deployment/blog \
+            blog=ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -n kloud-apps
+
+          kubectl rollout status deployment/blog -n kloud-apps --timeout=120s

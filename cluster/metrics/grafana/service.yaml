@@ -4,7 +4,7 @@ metadata:
   name: grafana
   namespace: kloud-metrics
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: grafana
   ports:

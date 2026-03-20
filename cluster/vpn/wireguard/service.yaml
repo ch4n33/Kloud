@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wg-easy-ui
+  namespace: kloud-vpn
+spec:
+  type: ClusterIP
+  selector:
+    app: wg-easy
+  ports:
+    # 웹 UI 포트만 — WireGuard UDP는 hostNetwork로 직접 노출
+    - name: web-ui
+      port: 51821
+      targetPort: 51821
+      protocol: TCP

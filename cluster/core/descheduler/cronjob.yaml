@@ -1,0 +1,37 @@
+# 5분 간격으로 descheduler 실행
+# preferred affinity를 만족하지 않는 pod를 evict하여 올바른 노드로 재스케줄링
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: descheduler
+  namespace: kube-system
+spec:
+  schedule: "*/5 * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: descheduler
+          restartPolicy: Never
+          containers:
+            - name: descheduler
+              image: registry.k8s.io/descheduler/descheduler:v0.31.0
+              args:
+                - --policy-config-file=/policy/policy.yaml
+                - --v=3
+              volumeMounts:
+                - name: policy
+                  mountPath: /policy
+              resources:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 64Mi
+                  cpu: 50m
+          volumes:
+            - name: policy
+              configMap:
+                name: descheduler-policy

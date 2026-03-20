@@ -1,0 +1,47 @@
+baseURL: https://blog.rche.moe/
+languageCode: ko
+title: rche.moe
+theme: PaperMod
+
+params:
+  env: production
+  defaultTheme: auto
+  showReadingTime: true
+  showShareButtons: false
+  showPostNavLinks: true
+  showBreadCrumbs: true
+  showCodeCopyButtons: true
+
+  homeInfoParams:
+    Title: "안녕하세요"
+    Content: "K3s 홈 클라우드를 운영하며 이것저것 만들어보는 블로그입니다."
+
+  socialIcons:
+    - name: github
+      url: "https://github.com/ch4n33"
+    - name: x
+      url: "https://x.com/g8an4"
+
+  assets:
+    disableFingerprinting: true
+
+menu:
+  main:
+    - identifier: about
+      name: About
+      url: /about/
+      weight: 10
+    - identifier: archives
+      name: Archives
+      url: /archives/
+      weight: 20
+    - identifier: search
+      name: Search
+      url: /search/
+      weight: 30
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON

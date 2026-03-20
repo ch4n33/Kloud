@@ -20,6 +20,11 @@ infrastructure/ansible/.vault_pass
 .DS_Store
 Thumbs.db
 
+# Hugo
+apps/blog/public/
+apps/blog/.hugo_build.lock
+apps/blog/resources/
+
 # IDE
 .vscode/
 .idea/

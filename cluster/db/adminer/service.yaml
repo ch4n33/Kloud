@@ -4,7 +4,7 @@ metadata:
   name: adminer
   namespace: kloud-db
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: adminer
   ports:
