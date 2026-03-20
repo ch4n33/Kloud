@@ -42,11 +42,16 @@
 | metallb-system | MetalLB | L2 모드, IP풀 192.168.50.200-220 |
 | cert-manager | cert-manager | letsencrypt-prod ClusterIssuer (HTTP-01) |
 
+### kloud-vpn
+
+| 서비스 | 이미지 | 노드 | Ingress | 비고 |
+|--------|--------|------|---------|------|
+| wg-easy | ghcr.io/wg-easy/wg-easy:latest | Ryzen (nodeSelector) | vpn.kloud.rche.moe (TLS, 웹 UI) | LoadBalancer 192.168.50.200 (UDP 51820, IP 공유) |
+
 ### 미배포 (매니페스트만 존재)
 
 | 서비스 | 매니페스트 위치 | 사유 |
 |--------|----------------|------|
-| WireGuard (wg-easy) | cluster/vpn/wireguard/ | DDNS 미설정 (WG_HOST: TODO) |
 | NFS provisioner | cluster/storage/nfs-provisioner/ | NFS 서버 미구성 |
 | Descheduler | cluster/core/descheduler/ | 배포 예정 (Pi failover rollback용) |
 
@@ -62,7 +67,7 @@
 | minecraft-data-pv | 20Gi | /home/ch4n33/server-data/minecraft-server/data |
 | minecraft-plugins-pv | 2Gi | /home/ch4n33/server-data/minecraft-server/plugins |
 | blog-pv | 1Gi | /home/ch4n33/server-data/blog |
-| wireguard-pv | 100Mi | /home/ch4n33/server-data/wireguard (미사용) |
+| wireguard-pv | 100Mi | /home/ch4n33/server-data/wireguard |
 
 ## 외부 접근 (Ingress 도메인)
 
@@ -71,3 +76,5 @@
 | blog.rche.moe | blog | cert-manager | Namecheap A 레코드 필요 |
 | app.kloud.rche.moe | sample-app | cert-manager | *.kloud.rche.moe |
 | grafana.kloud.rche.moe | grafana | cert-manager | *.kloud.rche.moe |
+| vpn.kloud.rche.moe | wg-easy (웹 UI) | cert-manager | *.kloud.rche.moe |
+| k3s.kloud.rche.moe | K3s API (VPN 경유) | K3s 자체 인증서 | /etc/hosts (192.168.50.18) |

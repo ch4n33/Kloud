@@ -23,6 +23,7 @@ INSTALL_ARGS="server \
   --disable servicelb \
   --tls-san ${SERVER_IP} \
   --tls-san kloud-ryzen \
+  --tls-san k3s.kloud.rche.moe \
   --node-label=kloud/tier=heavy \
   --write-kubeconfig-mode 644"
 

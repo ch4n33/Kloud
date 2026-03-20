@@ -1,0 +1,14 @@
+# K3s 내장 Traefik에 대한 HelmChartConfig 오버라이드
+# MetalLB IP 공유 설정 (WireGuard와 192.168.50.200 공유)
+# 적용: kubectl apply -f cluster/core/traefik/helmchartconfig.yaml
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    service:
+      annotations:
+        metallb.universe.tf/allow-shared-ip: "kloud-shared"
+        metallb.universe.tf/loadBalancerIPs: "192.168.50.200"

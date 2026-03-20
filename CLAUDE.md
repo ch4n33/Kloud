@@ -23,7 +23,13 @@ K3s v1.34.5+k3s1, 2노드 운영 중.
 ## 접속
 
 ```bash
-# Mac에서 kubectl (SSH 터널 필요)
+# Mac에서 kubectl — VPN 방식 (권장)
+# 1. WireGuard 연결 (wg-quick up kloud 또는 WireGuard GUI)
+# 2. /etc/hosts에 192.168.50.18 k3s.kloud.rche.moe 추가 필요
+export KUBECONFIG=~/Dev/Kloud/infrastructure/kubeconfig-external
+kubectl get nodes  # server: https://k3s.kloud.rche.moe:6443
+
+# Mac에서 kubectl — SSH 터널 방식 (대안)
 ssh -N nas-public &  # LocalForward 6443 설정됨
 export KUBECONFIG=~/Dev/Kloud/infrastructure/kubeconfig
 
@@ -51,8 +57,9 @@ ssh nas-public  # 후 sshpass로 pi@192.168.50.167 접속
 - **CI/CD:** GitHub Actions self-hosted runner → ghcr.io → kubectl
 - **DNS:** Namecheap (rche.moe)
 
+- **VPN:** WireGuard (wg-easy) — MetalLB IP 공유 (192.168.50.200, UDP 51820)
+
 ### 미배포 (매니페스트 준비됨)
-- WireGuard (wg-easy) — `cluster/vpn/wireguard/` (DDNS 미설정)
 - NFS provisioner — `cluster/storage/nfs-provisioner/`
 - Descheduler — `cluster/core/descheduler/` (Pi failover rollback용)
 

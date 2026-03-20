@@ -11,7 +11,7 @@
 L2 모드, IP풀: `192.168.50.200-192.168.50.220`
 
 현재 할당:
-- 192.168.50.200 → Traefik (HTTP/HTTPS)
+- 192.168.50.200 → Traefik (TCP 80/443) + WireGuard (UDP 51820) — IP 공유 (`allow-shared-ip`)
 - 192.168.50.204 → Minecraft (TCP 25565)
 
 ## Traefik Ingress
@@ -35,9 +35,33 @@ rche.moe 도메인을 Namecheap에서 관리.
 - `*.kloud.rche.moe` → 홈 공인 IP (A 레코드)
 - `blog.rche.moe` → 홈 공인 IP (A 레코드, 별도 등록 필요)
 
+## WireGuard VPN
+
+- **Pod:** wg-easy (kloud-vpn 네임스페이스)
+- **노드:** Ryzen (nodeSelector)
+- **외부 접속:** `vpn.kloud.rche.moe` (UDP 51820, MetalLB 192.168.50.200)
+- **웹 UI:** `https://vpn.kloud.rche.moe` (Ingress, TLS)
+- **클라이언트 IP 대역:** 10.8.0.x
+- **허용 서브넷:** 192.168.50.0/24 (홈 LAN)
+
 ## Mac에서 클러스터 접근
 
-공인 IP의 K8s API 포트(6443)가 포워딩되지 않으므로, SSH 터널을 사용.
+### 방법 1: WireGuard VPN (권장)
+
+```bash
+# 1. WireGuard 연결
+wg-quick up kloud  # 또는 WireGuard GUI 앱
+
+# 2. /etc/hosts에 도메인 매핑 (최초 1회)
+#    192.168.50.18 k3s.kloud.rche.moe
+
+# 3. kubectl 사용
+export KUBECONFIG=~/Dev/Kloud/infrastructure/kubeconfig-external
+kubectl get nodes
+k9s
+```
+
+### 방법 2: SSH 터널 (대안)
 
 ```bash
 # SSH 터널 (nas-public에 LocalForward 6443 설정됨)
@@ -59,3 +83,4 @@ k9s
 | 443 | 192.168.50.200:443 | Traefik HTTPS |
 | 8022 | 192.168.50.18:22 | Ryzen SSH (nas-public) |
 | 25565 | 192.168.50.204:25565 | Minecraft |
+| 51820 (UDP) | 192.168.50.200:51820 | WireGuard VPN |

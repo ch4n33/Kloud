@@ -19,8 +19,7 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: ch4n33-server
-      hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
+      # LoadBalancer 서비스(MetalLB IP 공유)로 UDP 51820 노출
       containers:
         - name: wg-easy
           image: ghcr.io/wg-easy/wg-easy:latest
@@ -32,7 +31,7 @@ spec:
           env:
             # 외부에서 접속할 주소 (DDNS 도메인)
             - name: WG_HOST
-              value: "TODO_DDNS_DOMAIN"
+              value: "vpn.kloud.rche.moe"
             # VPN 클라이언트가 접근할 서브넷 (홈 LAN)
             - name: WG_ALLOWED_IPS
               value: "192.168.50.0/24"
@@ -42,12 +41,12 @@ spec:
             # WireGuard 클라이언트 IP 대역
             - name: WG_DEFAULT_ADDRESS
               value: "10.8.0.x"
-            # 웹 UI 비밀번호
-            - name: PASSWORD
+            # 웹 UI 비밀번호 (bcrypt 해시, wg-easy v14+)
+            - name: PASSWORD_HASH
               valueFrom:
                 secretKeyRef:
                   name: wg-easy-secret
-                  key: PASSWORD
+                  key: PASSWORD_HASH
           volumeMounts:
             - name: wg-data
               mountPath: /etc/wireguard

@@ -8,9 +8,12 @@
 nodeSelector:
   kloud/tier: heavy
 
-# LoadBalancer 타입 (MetalLB가 IP 할당)
+# LoadBalancer 타입 (MetalLB IP 공유 — WireGuard와 192.168.50.200 공유)
 service:
   type: LoadBalancer
+  annotations:
+    metallb.universe.tf/allow-shared-ip: "kloud-shared"
+    metallb.universe.tf/loadBalancerIPs: "192.168.50.200"
 
 # 리소스 설정
 resources:

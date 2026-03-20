@@ -1,3 +1,23 @@
+# WireGuard UDP — MetalLB LoadBalancer (Traefik과 192.168.50.200 IP 공유)
+apiVersion: v1
+kind: Service
+metadata:
+  name: wg-easy
+  namespace: kloud-vpn
+  annotations:
+    metallb.universe.tf/allow-shared-ip: "kloud-shared"
+    metallb.universe.tf/loadBalancerIPs: "192.168.50.200"
+spec:
+  type: LoadBalancer
+  selector:
+    app: wg-easy
+  ports:
+    - name: wireguard
+      port: 51820
+      targetPort: 51820
+      protocol: UDP
+---
+# 웹 UI — ClusterIP (Ingress 경유 접근)
 apiVersion: v1
 kind: Service
 metadata:
@@ -8,7 +28,6 @@ spec:
   selector:
     app: wg-easy
   ports:
-    # 웹 UI 포트만 — WireGuard UDP는 hostNetwork로 직접 노출
     - name: web-ui
       port: 51821
       targetPort: 51821
