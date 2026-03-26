@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pc-turnon
+  namespace: kloud-apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pc-turnon
+  template:
+    metadata:
+      labels:
+        app: pc-turnon
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      nodeSelector:
+        kubernetes.io/hostname: ch4n33-server
+      containers:
+        - name: pc-turnon
+          image: ghcr.io/ch4n33/pc-turnon:latest
+          ports:
+            - containerPort: 8000
+              hostPort: 8000
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: pc-turnon-secret
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 16Mi
+              cpu: 10m
+            limits:
+              memory: 50Mi
+              cpu: 50m
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false

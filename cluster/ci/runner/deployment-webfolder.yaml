@@ -1,0 +1,56 @@
+# Self-hosted GitHub Actions runner for WebFolder repo
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: github-runner-webfolder
+  namespace: kloud-ci
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: github-runner-webfolder
+  template:
+    metadata:
+      labels:
+        app: github-runner-webfolder
+    spec:
+      serviceAccountName: github-runner
+      nodeSelector:
+        kubernetes.io/hostname: ch4n33-server
+      containers:
+        - name: runner
+          image: myoung34/github-runner:latest
+          env:
+            - name: RUNNER_NAME
+              value: kloud-webfolder
+            - name: RUNNER_SCOPE
+              value: repo
+            - name: REPO_URL
+              value: https://github.com/ch4n33/WebFolder
+            - name: LABELS
+              value: kloud,self-hosted,linux,amd64
+            - name: RUNNER_WORKDIR
+              value: /tmp/runner
+            - name: DISABLE_AUTO_UPDATE
+              value: "true"
+            - name: REPLACE_EXISTING_RUNNER
+              value: "true"
+            - name: ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: runner-secret
+                  key: GITHUB_PAT
+          volumeMounts:
+            - name: docker-sock
+              mountPath: /var/run/docker.sock
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 250m
+            limits:
+              memory: 2Gi
+              cpu: 2000m
+      volumes:
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock

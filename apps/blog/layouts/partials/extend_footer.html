@@ -1,0 +1,54 @@
+<script>
+(function () {
+  function parseGoDate(str) {
+    // Go 기본 형식: "2026-03-20 00:00:00 +0000 UTC"
+    var cleaned = str.replace(/ \+(\d{2})(\d{2}).*$/, '+$1:$2');
+    return new Date(cleaned);
+  }
+
+  function relativeTimeKo(date) {
+    var now = new Date();
+    var diffMs = now - date;
+    if (diffMs < 0) return null; // 미래 날짜는 원본 유지
+
+    var seconds = Math.floor(diffMs / 1000);
+    var minutes = Math.floor(seconds / 60);
+    var hours = Math.floor(minutes / 60);
+    var days = Math.floor(hours / 24);
+    var months = Math.floor(days / 30);
+    var years = Math.floor(days / 365);
+
+    if (seconds < 60) return '방금 전';
+    if (minutes < 60) return minutes + '분 전';
+    if (hours < 24) return hours + '시간 전';
+    if (days < 30) return days + '일 전';
+    if (months < 12) return months + '개월 전';
+    return years + '년 전';
+  }
+
+  function updateRelativeTimes() {
+    var selector =
+      '.post-meta span[title], .entry-footer span[title], .archive-meta span[title]';
+    var spans = document.querySelectorAll(selector);
+    for (var i = 0; i < spans.length; i++) {
+      var span = spans[i];
+      var date = parseGoDate(span.getAttribute('title'));
+      if (isNaN(date.getTime())) continue;
+
+      // 첫 실행 시 원본 텍스트 저장
+      if (!span.dataset.originalText) {
+        span.dataset.originalText = span.textContent;
+      }
+
+      var relative = relativeTimeKo(date);
+      if (relative) {
+        span.textContent = relative;
+        span.title = span.dataset.originalText; // 툴팁에 원본 날짜 표시
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', updateRelativeTimes);
+  setInterval(updateRelativeTimes, 60000);
+})();
+</script>

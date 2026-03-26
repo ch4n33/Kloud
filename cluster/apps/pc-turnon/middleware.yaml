@@ -1,0 +1,10 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: pc-turnon-ratelimit
+  namespace: kloud-apps
+spec:
+  rateLimit:
+    average: 5
+    burst: 10
+    period: 1m
