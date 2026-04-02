@@ -1,0 +1,36 @@
+name: Deploy RisuAI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cluster/apps/risuai/**'
+      - '.github/workflows/deploy-risuai.yml'
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, kloud]
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install kubectl
+        run: |
+          if ! command -v kubectl &>/dev/null; then
+            curl -fsSL "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
+            chmod +x /usr/local/bin/kubectl
+          fi
+          kubectl version --client
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+
+      - name: Deploy to K3s
+        run: |
+          kubectl apply -f cluster/apps/risuai/
+          kubectl rollout status deployment/risuai -n kloud-apps --timeout=120s

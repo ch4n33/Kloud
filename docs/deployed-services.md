@@ -11,6 +11,7 @@
 | blog | hugomods/hugo:latest | Ryzen (nodeSelector, hostPath PV) | blog.rche.moe (TLS) | Hugo server, PaperMod 테마 |
 | sample-app | ghcr.io/ch4n33/sample-app:latest | 양쪽 (replicas: 2) | app.kloud.rche.moe (TLS) | Go HTTP 서버, 멀티아키텍처 검증용 |
 | minecraft | itzg/minecraft-server | Ryzen (nodeSelector) | 없음 (LoadBalancer 25565) | PAPER 서버, on-demand (replicas: 0~1) |
+| risuai | ghcr.io/kwaroran/risuai:latest | Ryzen (nodeSelector, hostPath PV) | risu.kloud.rche.moe (TLS, BasicAuth) | AI 캐릭터 챗 프론트엔드 |
 
 ### kloud-metrics
 
@@ -67,6 +68,7 @@
 | minecraft-data-pv | 20Gi | /home/ch4n33/server-data/minecraft-server/data |
 | minecraft-plugins-pv | 2Gi | /home/ch4n33/server-data/minecraft-server/plugins |
 | blog-pv | 1Gi | /home/ch4n33/server-data/blog |
+| risuai-pv | 2Gi | /home/ch4n33/server-data/risuai |
 | wireguard-pv | 100Mi | /home/ch4n33/server-data/wireguard |
 
 ## 외부 접근 (Ingress 도메인)
@@ -77,4 +79,5 @@
 | app.kloud.rche.moe | sample-app | cert-manager | *.kloud.rche.moe |
 | grafana.kloud.rche.moe | grafana | cert-manager | *.kloud.rche.moe |
 | vpn.kloud.rche.moe | wg-easy (웹 UI) | cert-manager | *.kloud.rche.moe |
+| risu.kloud.rche.moe | risuai | cert-manager | *.kloud.rche.moe |
 | k3s.kloud.rche.moe | K3s API (VPN 경유) | K3s 자체 인증서 | /etc/hosts (192.168.50.18) |

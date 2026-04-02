@@ -77,7 +77,7 @@ infrastructure/
   scripts/                # SD카드 플래싱, K3s 설치 스크립트
 cluster/
   core/                   # MetalLB, cert-manager, Traefik, Descheduler
-  apps/                   # sample-app, blog, minecraft
+  apps/                   # sample-app, blog, minecraft, risuai
   metrics/                # Prometheus, Grafana, node-exporter, cAdvisor
   db/                     # PostgreSQL, Adminer
   ci/                     # GitHub Actions runner
@@ -86,6 +86,7 @@ cluster/
 .github/workflows/
   deploy.yml              # sample-app CI/CD
   deploy-blog.yml         # blog CI/CD
+  deploy-risuai.yml       # risuai CI/CD (매니페스트 배포만)
 ```
 
 ## 제약 사항

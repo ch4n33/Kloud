@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: risuai
+  namespace: kloud-apps
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate  # PV 사용, 동시 마운트 방지
+  selector:
+    matchLabels:
+      app: risuai
+  template:
+    metadata:
+      labels:
+        app: risuai
+    spec:
+      # hostPath PV가 Ryzen에 있으므로 Ryzen 고정
+      nodeSelector:
+        kubernetes.io/hostname: ch4n33-server
+      containers:
+        - name: risuai
+          image: ghcr.io/kwaroran/risuai:latest
+          ports:
+            - containerPort: 6001
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 6001
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 6001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 10m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+          volumeMounts:
+            - name: risuai-data
+              mountPath: /app/save
+      volumes:
+        - name: risuai-data
+          persistentVolumeClaim:
+            claimName: risuai-pvc
