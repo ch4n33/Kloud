@@ -21,6 +21,13 @@ spec:
       containers:
         - name: risuai
           image: ghcr.io/kwaroran/risuai:latest
+          # 리버스 프록시(Traefik) 뒤에서 rate-limit 429 방지 패치
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              sed -i "s/const app = express();/const app = express();\napp.set('trust proxy', 1);/" /app/server/node/server.cjs
+              sed -i 's/max: 90/max: 100000/g' /app/server/node/server.cjs
+              node /app/server/node/server.cjs
           ports:
             - containerPort: 6001
           livenessProbe:

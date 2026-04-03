@@ -12,3 +12,8 @@ spec:
       annotations:
         metallb.universe.tf/allow-shared-ip: "kloud-shared"
         metallb.universe.tf/loadBalancerIPs: "192.168.50.200"
+    experimental:
+      plugins:
+        fail2ban:
+          moduleName: github.com/tomMoulard/fail2ban
+          version: v0.8.3
