@@ -22,3 +22,7 @@ spec:
         maxretry: 4
         enabled: true
         statuscode: "401"
+      allowlist:
+        ip:
+          - "0.0.0.0/0"
+          - "::/0"
