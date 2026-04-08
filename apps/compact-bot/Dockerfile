@@ -26,18 +26,19 @@ RUN npm install -g --omit=optional \
       @anthropic-ai/claude-code \
       @serin511/compact-bot
 
-# 봇 사용자 + sudo NOPASSWD
+# node 베이스 이미지에 이미 'node' 사용자(uid 1000) 존재 → 재사용
+# 홈 디렉토리를 /claude-home으로 이동, sudo NOPASSWD 부여
 # uid 1000은 호스트 ch4n33와 동일 → hostPath 권한 호환
-RUN useradd -m -u 1000 -d /claude-home -s /bin/bash bot \
-    && echo "bot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/bot \
-    && chmod 0440 /etc/sudoers.d/bot \
+RUN usermod -d /claude-home -m node \
+    && echo "node ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/node \
+    && chmod 0440 /etc/sudoers.d/node \
     && mkdir -p /app /workspace /opt/cli/bin \
-    && chown -R bot:bot /app /workspace /claude-home /opt/cli
+    && chown -R node:node /app /workspace /claude-home /opt/cli
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-USER bot
+USER node
 WORKDIR /app
 ENV HOME=/claude-home \
     PATH=/opt/cli/bin:/claude-home/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
