@@ -27,6 +27,12 @@ spec:
             - |
               sed -i "s/const app = express();/const app = express();\napp.set('trust proxy', 1);/" /app/server/node/server.cjs
               sed -i 's/max: 90/max: 100000/g' /app/server/node/server.cjs
+              # fs가 fs/promises로 할당되어 fs.writeFileSync 크래시 — 동기 fs 별도 변수로 추가
+              sed -i "s/const fs = require('fs\/promises')/const fs = require('fs\/promises'); const fsSync = require('fs')/" /app/server/node/server.cjs
+              sed -i 's/fs\.writeFileSync/fsSync.writeFileSync/g' /app/server/node/server.cjs
+              sed -i 's/fs\.readFileSync/fsSync.readFileSync/g' /app/server/node/server.cjs
+              # safeStructuredClone 미정의 버그 우회 (모듈 로드 전에 globalThis에 주입)
+              sed -i 's|<head>|<head><script>globalThis.safeStructuredClone=function(o){try{return structuredClone(o)}catch(e){return JSON.parse(JSON.stringify(o))}}</script>|' /app/dist/index.html
               node /app/server/node/server.cjs
           ports:
             - containerPort: 6001
