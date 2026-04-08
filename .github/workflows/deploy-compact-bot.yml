@@ -1,0 +1,88 @@
+name: Build and Deploy Compact-Bot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/compact-bot/**"
+      - "cluster/compact-bot/**"
+      - ".github/workflows/deploy-compact-bot.yml"
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ch4n33/compact-bot
+
+jobs:
+  build-and-deploy:
+    runs-on: [self-hosted, kloud]
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # node-pty native 모듈을 arm64 emulation으로 컴파일 — 시간 다소 걸림
+      - name: Build and push multi-arch image
+        uses: docker/build-push-action@v6
+        with:
+          context: apps/compact-bot
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ghcr.io/${{ env.IMAGE_NAME }}:latest
+
+      - name: Install kubectl
+        run: |
+          if ! command -v kubectl &>/dev/null; then
+            curl -fsSL "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
+            chmod +x /usr/local/bin/kubectl
+          fi
+          kubectl version --client
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+
+      - name: Deploy to K3s
+        run: |
+          # 매니페스트가 없으면 먼저 생성 (secret.yaml 제외 — 별도 수동 생성 필요)
+          if ! kubectl get deployment compact-bot -n compact-bot 2>/dev/null; then
+            echo "[deploy] 첫 배포 — 매니페스트 일괄 적용"
+            kubectl apply -f cluster/compact-bot/namespace.yaml
+            kubectl apply -f cluster/compact-bot/rbac.yaml
+            kubectl apply -f cluster/compact-bot/admission-policy.yaml
+            kubectl apply -f cluster/compact-bot/pv.yaml
+            kubectl apply -f cluster/compact-bot/deployment.yaml
+          else
+            # 매니페스트 변경 반영 (secret.example.yaml은 무시)
+            kubectl apply \
+              -f cluster/compact-bot/namespace.yaml \
+              -f cluster/compact-bot/rbac.yaml \
+              -f cluster/compact-bot/admission-policy.yaml \
+              -f cluster/compact-bot/pv.yaml \
+              -f cluster/compact-bot/deployment.yaml
+          fi
+
+          # 이미지 업데이트
+          kubectl set image deployment/compact-bot \
+            compact-bot=ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -n compact-bot
+
+          kubectl rollout status deployment/compact-bot -n compact-bot --timeout=300s

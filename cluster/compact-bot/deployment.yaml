@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: compact-bot
+  namespace: compact-bot
+  labels:
+    app: compact-bot
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate # PVC ReadWriteOnce + hostPath 동시 마운트 방지
+  selector:
+    matchLabels:
+      app: compact-bot
+  template:
+    metadata:
+      labels:
+        app: compact-bot
+    spec:
+      serviceAccountName: compact-bot-sa
+      # hostPath PV가 Ryzen에 있고, 워크로드도 무거움 → Ryzen 고정
+      nodeSelector:
+        kubernetes.io/hostname: ch4n33-server
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: compact-bot
+          image: ghcr.io/ch4n33/compact-bot:latest
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: compact-bot-secret
+          env:
+            - name: DEFAULT_CWD
+              value: /workspace
+            - name: TZ
+              value: Asia/Seoul
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 1536Mi
+              cpu: 1500m
+          volumeMounts:
+            # state PV: 3 subPath 분기
+            - name: state
+              mountPath: /claude-home/.claude
+              subPath: claude
+            - name: state
+              mountPath: /claude-home/.local
+              subPath: local
+            - name: state
+              mountPath: /app/data
+              subPath: data
+            # tools PV: /opt/cli 통째
+            - name: tools
+              mountPath: /opt/cli
+            # workspace PV: claude 작업 공간
+            - name: workspace
+              mountPath: /workspace
+      volumes:
+        - name: state
+          persistentVolumeClaim:
+            claimName: compact-bot-state-pvc
+        - name: tools
+          persistentVolumeClaim:
+            claimName: compact-bot-tools-pvc
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: compact-bot-workspace-pvc

@@ -1,0 +1,37 @@
+# compact-bot SA의 다음 작업을 차단:
+#   1. 보호 네임스페이스(compact-bot, kube-system, kube-public, kube-node-lease) 수정
+#   2. 네임스페이스 리소스 자체에 대한 모든 ops (RBAC 추적 가능한 ns만 운영 정책)
+# K3s v1.34.5 (K8s 1.30+) — ValidatingAdmissionPolicy GA
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: compact-bot-self-protect
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        operations: ["CREATE", "UPDATE", "DELETE"]
+        resources: ["*"]
+  matchConditions:
+    - name: from-compact-bot-sa
+      expression: "request.userInfo.username == 'system:serviceaccount:compact-bot:compact-bot-sa'"
+    - name: target-protected-or-namespace-resource
+      expression: |
+        request.namespace in ['compact-bot', 'kube-system', 'kube-public', 'kube-node-lease']
+        || (request.resource.group == '' && request.resource.resource == 'namespaces')
+  validations:
+    - expression: "false"
+      messageExpression: |
+        (request.resource.group == '' && request.resource.resource == 'namespaces')
+          ? 'compact-bot SA는 네임스페이스 리소스 자체를 생성/수정/삭제할 수 없습니다 (RBAC 관리 일관성)'
+          : 'compact-bot SA는 보호된 네임스페이스(compact-bot, kube-system, kube-public, kube-node-lease)를 수정할 수 없습니다'
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: compact-bot-self-protect
+spec:
+  policyName: compact-bot-self-protect
+  validationActions: [Deny]

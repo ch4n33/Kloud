@@ -1,0 +1,116 @@
+# compact-bot 영속 스토리지: 3개 PV/PVC 쌍
+# 모두 ch4n33-server (Ryzen) hostPath 정적 프로비저닝
+
+# === state PV (3Gi) ===
+# subPath로 분기: claude (인증), data (봇 설정), local (~/.local 사용자 패키지)
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: compact-bot-state-pv
+spec:
+  capacity:
+    storage: 3Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: /home/ch4n33/server-data/compact-bot/state
+    type: DirectoryOrCreate
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values: ["ch4n33-server"]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: compact-bot-state-pvc
+  namespace: compact-bot
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+  volumeName: compact-bot-state-pv
+  resources:
+    requests:
+      storage: 3Gi
+---
+# === tools PV (5Gi) ===
+# /opt/cli 통째로 마운트 — sudo로 설치한 시스템 도구 영속화
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: compact-bot-tools-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: /home/ch4n33/server-data/compact-bot/tools
+    type: DirectoryOrCreate
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values: ["ch4n33-server"]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: compact-bot-tools-pvc
+  namespace: compact-bot
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+  volumeName: compact-bot-tools-pv
+  resources:
+    requests:
+      storage: 5Gi
+---
+# === workspace PV (10Gi) ===
+# claude 작업 공간 (clone된 레포 등)
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: compact-bot-workspace-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: /home/ch4n33/server-data/compact-bot/workspace
+    type: DirectoryOrCreate
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values: ["ch4n33-server"]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: compact-bot-workspace-pvc
+  namespace: compact-bot
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+  volumeName: compact-bot-workspace-pv
+  resources:
+    requests:
+      storage: 10Gi
