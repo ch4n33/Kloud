@@ -52,8 +52,9 @@ spec:
             - name: state
               mountPath: /claude-home/.local
               subPath: local
+            # compact-bot이 데이터/소켓을 ~/.config/compact-bot에 저장
             - name: state
-              mountPath: /app/data
+              mountPath: /claude-home/.config/compact-bot
               subPath: data
             # tools PV: /opt/cli 통째
             - name: tools
