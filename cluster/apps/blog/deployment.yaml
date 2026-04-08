@@ -5,8 +5,6 @@ metadata:
   namespace: kloud-apps
 spec:
   replicas: 1
-  strategy:
-    type: Recreate  # PV 사용, 동시 마운트 방지
   selector:
     matchLabels:
       app: blog
@@ -15,38 +13,21 @@ spec:
       labels:
         app: blog
     spec:
-      # hostPath PV가 Ryzen에 있으므로 Ryzen 고정
-      nodeSelector:
-        kubernetes.io/hostname: ch4n33-server
       containers:
         - name: blog
-          image: hugomods/hugo:latest
-          command: ["hugo", "server",
-            "--bind", "0.0.0.0",
-            "-p", "1313",
-            "--baseURL", "https://blog.rche.moe/",
-            "--appendPort=false",
-            "--disableLiveReload"]
-          workingDir: /src
+          image: ghcr.io/ch4n33/blog:latest
           ports:
-            - containerPort: 1313
+            - containerPort: 80
           livenessProbe:
             httpGet:
               path: /
-              port: 1313
+              port: 80
             initialDelaySeconds: 5
             periodSeconds: 30
           resources:
             requests:
-              memory: 32Mi
-              cpu: 10m
+              memory: 16Mi
+              cpu: 5m
             limits:
-              memory: 128Mi
-              cpu: 100m
-          volumeMounts:
-            - name: blog-data
-              mountPath: /src
-      volumes:
-        - name: blog-data
-          persistentVolumeClaim:
-            claimName: blog-pvc
+              memory: 64Mi
+              cpu: 50m

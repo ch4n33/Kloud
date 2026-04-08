@@ -9,4 +9,4 @@ spec:
     app: blog
   ports:
     - port: 80
-      targetPort: 1313
+      targetPort: 80
