@@ -10,7 +10,7 @@ secrets/
 
 # K3s
 k3s-token
-kubeconfig
+infrastructure/*kubeconfig*
 
 # Ansible
 *.retry
