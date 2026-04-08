@@ -45,17 +45,9 @@ spec:
               memory: 1536Mi
               cpu: 1500m
           volumeMounts:
-            # state PV: 3 subPath 분기
+            # state PV: HOME 디렉토리 통째 마운트 (~/.claude.json, ~/.claude/, ~/.config/compact-bot/, ~/.local/ 모두 영속화)
             - name: state
-              mountPath: /claude-home/.claude
-              subPath: claude
-            - name: state
-              mountPath: /claude-home/.local
-              subPath: local
-            # compact-bot이 데이터/소켓을 ~/.config/compact-bot에 저장
-            - name: state
-              mountPath: /claude-home/.config/compact-bot
-              subPath: data
+              mountPath: /claude-home
             # tools PV: /opt/cli 통째
             - name: tools
               mountPath: /opt/cli
