@@ -1,110 +1,65 @@
-# Kloud
+# CLAUDE.md
 
-K3s 기반 홈 클라우드 클러스터. 서비스 개발부터 배포까지 자체 인프라에서 수행한다.
+Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
 
-## 상세 문서
+**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
-- [docs/deployed-services.md](docs/deployed-services.md) — 배포된 서비스 현황, 스토리지, 외부 도메인
-- [docs/networking.md](docs/networking.md) — 네트워크 구성, MetalLB, TLS, DNS, SSH 터널
-- [docs/ci-cd.md](docs/ci-cd.md) — GitHub Actions 파이프라인, ghcr.io, 새 앱 추가 방법
-- [docs/scheduling.md](docs/scheduling.md) — 노드 레이블, 스케줄링 패턴, Descheduler
-- [docs/risuai.md](docs/risuai.md) — RisuAI 배포, 업스트림 버그 sed 패치, 이미지 업데이트 주의사항
-- [docs/compact-bot.md](docs/compact-bot.md) — Discord ↔ Claude Code 브리지, 클러스터 운영 권한, OAuth 로그인 절차
+## 1. Think Before Coding
 
-## 클러스터 현황
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
 
-K3s v1.34.5+k3s1, 2노드 운영 중.
+Before implementing:
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them - don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
 
-| K3s 노드명 | 하드웨어 | IP | 역할 | 상태 |
-|------------|---------|-----|------|------|
-| ch4n33-server | Ryzen 5625U, 32GB RAM, 2TB SSD, Ubuntu 24.04 | 192.168.50.18 | control-plane + 워커 | **Ready** |
-| raspberrypi | Pi 4B 2GB, SD 카드, Debian Bookworm | 192.168.50.167 | 워커 | **Ready** |
-| (kloud-pi2) | Pi 4B 2GB | — | 미배포 | — |
-| (kloud-pi3) | Pi 4B 2GB | — | 미배포 | — |
+## 2. Simplicity First
 
-## 접속
+**Minimum code that solves the problem. Nothing speculative.**
 
-```bash
-# Mac에서 kubectl — VPN 방식 (권장)
-# 1. WireGuard 연결 (wg-quick up kloud 또는 WireGuard GUI)
-# 2. /etc/hosts에 192.168.50.18 k3s.kloud.rche.moe 추가 필요
-export KUBECONFIG=~/Dev/Kloud/infrastructure/kubeconfig-external
-kubectl get nodes  # server: https://k3s.kloud.rche.moe:6443
+- No features beyond what was asked.
+- No abstractions for single-use code.
+- No "flexibility" or "configurability" that wasn't requested.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
 
-# Mac에서 kubectl — SSH 터널 방식 (대안)
-ssh -N nas-public &  # LocalForward 6443 설정됨
-export KUBECONFIG=~/Dev/Kloud/infrastructure/kubeconfig
+Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
 
-# Ryzen SSH (외부)
-ssh nas-public  # 121.152.143.55:8022, user: ch4n33
+## 3. Surgical Changes
 
-# Ryzen SSH (내부)
-ssh nas         # 192.168.50.18, user: ch4n33, sudo NOPASSWD
+**Touch only what you must. Clean up only your own mess.**
 
-# Pi SSH (Ryzen 경유)
-ssh nas-public  # 후 sshpass로 pi@192.168.50.167 접속
+When editing existing code:
+- Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken.
+- Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it - don't delete it.
+
+When your changes create orphans:
+- Remove imports/variables/functions that YOUR changes made unused.
+- Don't remove pre-existing dead code unless asked.
+
+The test: Every changed line should trace directly to the user's request.
+
+## 4. Goal-Driven Execution
+
+**Define success criteria. Loop until verified.**
+
+Transform tasks into verifiable goals:
+- "Add validation" → "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" → "Write a test that reproduces it, then make it pass"
+- "Refactor X" → "Ensure tests pass before and after"
+
+For multi-step tasks, state a brief plan:
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+3. [Step] → verify: [check]
 ```
 
-자격증명: `infrastructure/.credentials` (gitignore 대상)
+Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
-## 아키텍처
+---
 
-- **K3s:** v1.34.5+k3s1
-- **CNI:** Flannel (VXLAN)
-- **Ingress:** Traefik (K3s 내장, Ryzen에서 실행, LB IP: 192.168.50.200)
-- **LoadBalancer:** MetalLB L2 (IP풀: 192.168.50.200-220)
-- **TLS:** cert-manager + Let's Encrypt (HTTP-01)
-- **스토리지:** hostPath PV (Ryzen `/home/ch4n33/server-data/`)
-- **모니터링:** Prometheus + Grafana + node-exporter + cAdvisor
-- **CI/CD:** GitHub Actions self-hosted runner → ghcr.io → kubectl
-- **DNS:** Namecheap (rche.moe)
-
-- **VPN:** WireGuard (wg-easy) — MetalLB IP 공유 (192.168.50.200, UDP 51820)
-
-### 미배포 (매니페스트 준비됨)
-- NFS provisioner — `cluster/storage/nfs-provisioner/`
-- Descheduler — `cluster/core/descheduler/` (Pi failover rollback용)
-
-## 디렉토리 구조
-
-```
-apps/
-  sample-app/             # Go HTTP 서버 (멀티아키텍처 검증용)
-  blog/                   # Hugo 블로그 (PaperMod 테마, ghcr.io/ch4n33/blog)
-infrastructure/
-  kubeconfig              # Mac용 (127.0.0.1:6443, SSH 터널 필요)
-  kubeconfig-external     # 외부용 (공인 IP, 포트 미개방)
-  .credentials            # Pi 비밀번호, WiFi 정보 (gitignore)
-  ansible/                # 노드 프로비저닝 플레이북
-  scripts/                # SD카드 플래싱, K3s 설치 스크립트
-cluster/
-  core/                   # MetalLB, cert-manager, Traefik, Descheduler
-  apps/                   # sample-app, blog, minecraft, risuai
-  metrics/                # Prometheus, Grafana, node-exporter, cAdvisor
-  db/                     # PostgreSQL, Adminer
-  ci/                     # GitHub Actions runner
-  vpn/                    # WireGuard (미배포)
-  storage/                # NFS provisioner (미배포)
-.github/workflows/
-  deploy.yml              # sample-app CI/CD
-  deploy-blog.yml         # blog CI/CD
-  deploy-risuai.yml       # risuai CI/CD (매니페스트 배포만)
-```
-
-## 제약 사항
-
-- Pi 노드는 2GB RAM — `resources.limits.memory` 반드시 명시
-- Pi는 SD 카드 전용 — log2ram, tmpfs, journald volatile로 쓰기 최소화 권장
-- 혼합 아키텍처 (arm64 + amd64) — 멀티아키텍처 이미지 필수, 미지원 시 nodeSelector로 Ryzen 지정
-- 무거운 워크로드는 `nodeSelector: kloud/tier: heavy` (Ryzen)로 제한
-- macOS에서 dd: `bs=1m` (소문자), `status=progress` 사용 불가
-- Pi 비밀번호 해시: `openssl passwd -6` (SHA-512) 사용, `$apr1$`/`$1$` 금지
-
-## 컨벤션
-
-- Kubernetes 매니페스트: `cluster/` 하위에 기능별 디렉토리
-- Helm values 파일명: `values.yaml`
-- 노드 레이블: `kloud/tier=light` (Pi), `kloud/tier=heavy` (Ryzen)
-- 한국어 주석 사용
-- 멀티아키텍처 Docker 빌드: `docker buildx` + `--platform linux/amd64,linux/arm64`
-- Pi SSH: Ryzen 경유, sshpass 사용 시 비밀번호는 파일로 전달 (`sshpass -f`, heredoc)
+**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
