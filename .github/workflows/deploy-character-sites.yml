@@ -57,6 +57,7 @@ jobs:
       - name: Normalize kube context
         run: |
           perl -0pi -e 's/(current-context:\s*)\S+/${1}kloud/; s/(\ncontexts:\n\s*-\s*context:\n(?:\s{4}.+\n)+\s*name:\s*)\S+/${1}kloud/' ~/.kube/config
+          perl -0pi -e 's#server:\s*\S+#server: https://kubernetes.default.svc:443#' ~/.kube/config
 
       - name: Verify cluster client
         run: kubectl --context kloud version --client
