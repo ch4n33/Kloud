@@ -1,0 +1,84 @@
+:root {
+  color-scheme: dark;
+  background: #050607;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background: #050607;
+}
+
+.stage {
+  min-height: 100dvh;
+  padding: clamp(16px, 3vw, 40px);
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
+
+.stage--ako {
+  grid-template-columns: minmax(0, 426px) minmax(0, 559px);
+  gap: clamp(16px, 4vw, 56px);
+  align-items: end;
+}
+
+.stage--malkuth {
+  place-items: center;
+}
+
+.art {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.art--ako-portrait {
+  max-height: min(92dvh, 1080px);
+  justify-self: end;
+}
+
+.art--ako-dress {
+  max-height: min(72dvh, 760px);
+  justify-self: start;
+}
+
+.art--malkuth {
+  max-height: min(96dvh, 1180px);
+}
+
+@media (max-width: 720px) {
+  .stage--ako {
+    min-height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding-block: 24px;
+  }
+
+  .art--ako-portrait,
+  .art--ako-dress {
+    justify-self: center;
+  }
+
+  .art--ako-portrait {
+    max-height: 64dvh;
+  }
+
+  .art--ako-dress {
+    max-height: 48dvh;
+  }
+}
+

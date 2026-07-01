@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: character-sites
+  namespace: kloud-apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: character-sites
+  template:
+    metadata:
+      labels:
+        app: character-sites
+    spec:
+      # 멀티아키텍처 nginx 이미지라 Ryzen(amd64), Pi(arm64) 양쪽에서 실행 가능
+      containers:
+        - name: character-sites
+          image: ghcr.io/ch4n33/character-sites:latest
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 16Mi
+              cpu: 5m
+            limits:
+              memory: 64Mi
+              cpu: 50m
+

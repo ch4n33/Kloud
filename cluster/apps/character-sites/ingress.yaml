@@ -1,0 +1,57 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: character-sites
+  namespace: kloud-apps
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - ako.pet
+        - www.ako.pet
+        - malkuth.moe
+        - www.malkuth.moe
+      secretName: character-sites-tls
+  rules:
+    - host: ako.pet
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: character-sites
+                port:
+                  number: 80
+    - host: www.ako.pet
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: character-sites
+                port:
+                  number: 80
+    - host: malkuth.moe
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: character-sites
+                port:
+                  number: 80
+    - host: www.malkuth.moe
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: character-sites
+                port:
+                  number: 80

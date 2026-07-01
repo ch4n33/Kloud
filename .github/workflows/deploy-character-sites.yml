@@ -1,0 +1,64 @@
+name: Build and Deploy Character Sites
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/character-sites/**'
+      - 'cluster/apps/character-sites/**'
+      - '.github/workflows/deploy-character-sites.yml'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ch4n33/character-sites
+
+jobs:
+  build-and-deploy:
+    runs-on: [self-hosted, kloud]
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push multi-arch image
+        uses: docker/build-push-action@v6
+        with:
+          context: apps/character-sites
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ghcr.io/${{ env.IMAGE_NAME }}:latest
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+
+      - name: Verify cluster client
+        run: kubectl --context kloud version --client
+
+      - name: Deploy to K3s
+        run: |
+          kubectl --context kloud apply -f cluster/apps/character-sites/
+          kubectl --context kloud set image deployment/character-sites \
+            character-sites=ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -n kloud-apps
+          kubectl --context kloud rollout status deployment/character-sites -n kloud-apps --timeout=120s
+
