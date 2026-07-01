@@ -46,6 +46,9 @@ jobs:
             ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
             ghcr.io/${{ env.IMAGE_NAME }}:latest
 
+      - name: Set up cluster client
+        uses: azure/setup-kubectl@v4
+
       - name: Set up kubeconfig
         run: |
           mkdir -p ~/.kube
@@ -61,4 +64,3 @@ jobs:
             character-sites=ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             -n kloud-apps
           kubectl --context kloud rollout status deployment/character-sites -n kloud-apps --timeout=120s
-
