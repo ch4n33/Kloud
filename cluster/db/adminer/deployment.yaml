@@ -17,7 +17,7 @@ spec:
         kubernetes.io/hostname: ch4n33-server
       containers:
         - name: adminer
-          image: adminer:latest
+          image: adminer:6.1.2@sha256:eb3a6f381409ea3da5157b69537dad391fe705623a74f468957384dfe579e02a
           ports:
             - containerPort: 8080
           resources:

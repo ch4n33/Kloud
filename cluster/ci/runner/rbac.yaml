@@ -4,6 +4,8 @@ kind: ServiceAccount
 metadata:
   name: github-runner
   namespace: kloud-ci
+imagePullSecrets:
+  - name: ghcr-ch4n33
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole

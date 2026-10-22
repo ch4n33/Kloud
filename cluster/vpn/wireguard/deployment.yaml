@@ -20,9 +20,11 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: ch4n33-server
       # LoadBalancer 서비스(MetalLB IP 공유)로 UDP 51820 노출
+      imagePullSecrets:
+        - name: ghcr-ch4n33
       containers:
         - name: wg-easy
-          image: ghcr.io/wg-easy/wg-easy:latest
+          image: ghcr.io/ch4n33/kloud-wg-easy@sha256:d38a84894cccc7a75a0ba1acb14f2d3f346e3765dc3427f1d66e9b83dae56518
           ports:
             - containerPort: 51820
               protocol: UDP
