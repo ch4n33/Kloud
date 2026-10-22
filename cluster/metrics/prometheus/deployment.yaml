@@ -21,9 +21,11 @@ spec:
         runAsUser: 65534
         runAsGroup: 65534
         fsGroup: 65534
+      imagePullSecrets:
+        - name: ghcr-ch4n33
       containers:
         - name: prometheus
-          image: prom/prometheus:latest
+          image: ghcr.io/ch4n33/kloud-ca-prometheus@sha256:ef86b0e46f9bd694ecc98d4fe315fab16e4352c504f271f5f1d2d666167406c9
           ports:
             - containerPort: 9090
           volumeMounts:

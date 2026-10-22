@@ -21,9 +21,11 @@ spec:
         runAsUser: 472
         runAsGroup: 472
         fsGroup: 472
+      imagePullSecrets:
+        - name: ghcr-ch4n33
       containers:
         - name: grafana
-          image: grafana/grafana:latest
+          image: ghcr.io/ch4n33/kloud-ca-grafana@sha256:d513bab238d9aa61d1ffd65547f61f68a31d0ac8122688a05f35361303c80203
           ports:
             - containerPort: 3000
           volumeMounts:

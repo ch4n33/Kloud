@@ -3,4 +3,7 @@ FROM node:22.23.4-alpine@sha256:ebc216c22db53dbde85719a874978d5aec04e6e405ad26a3
 
 FROM ghcr.io/wg-easy/wg-easy@sha256:5f26407fd2ede54df76d63304ef184576a6c1bb73f934a58a11abdd852fab549
 
+# Alpine v3.22의 공식 수정 CA 번들을 고정 설치한다.
+RUN apk add --no-cache --upgrade ca-certificates-bundle=20261020-r0
+
 COPY --from=node22 /usr/local/bin/node /usr/local/bin/node

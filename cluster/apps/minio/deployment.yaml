@@ -21,13 +21,19 @@ spec:
         kubernetes.io/hostname: ch4n33-server
       containers:
         - name: minio
-          image: minio/minio:latest
+          image: docker.io/minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+          imagePullPolicy: IfNotPresent
           args: ["server", "/data", "--console-address", ":9001"]
           ports:
             - containerPort: 9000
               name: api
             - containerPort: 9001
               name: console
+          env:
+            - name: SSL_CERT_FILE
+              value: /etc/ssl/kloud-ca/ca-certificates.crt
+            - name: SSL_CERT_DIR
+              value: /etc/ssl/kloud-ca
           envFrom:
             - secretRef:
                 name: minio-secret
@@ -51,9 +57,19 @@ spec:
               memory: "512Mi"
               cpu: "500m"
           volumeMounts:
+            - name: minio-ca-certificates
+              mountPath: /etc/ssl/kloud-ca
+              readOnly: true
             - name: minio-data
               mountPath: /data
       volumes:
+        - name: minio-ca-certificates
+          configMap:
+            name: minio-ca-certificates
+            defaultMode: 0444
+            items:
+              - key: ca-certificates.crt
+                path: ca-certificates.crt
         - name: minio-data
           persistentVolumeClaim:
             claimName: minio-pvc

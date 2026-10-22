@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "name": "minio",
+  "strategy": "project-filtered-image-trust-bundle",
+  "base": {
+    "reference": "docker.io/minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
+    "version": "RELEASE.2025-09-07T16-13-09Z"
+  },
+  "bundle": {
+    "path": "cluster/security/ca-distrust/legacy/minio-ca/ca-certificates.bundle",
+    "sha256": "56891699080bd42f92ba34262b4b832fbda5dab9a9108a9b838b69cb567b5170",
+    "sizeBytes": 211726
+  },
+  "removedCertificates": {
+    "86A1ECBA089C4A8D3BBE2734C612BA341D813E043CF9E8A862CD5C57A36BBE6B": 1,
+    "D7A7A0FB5D7E2731D771E9484EBCDEF71D5F0C3E0A2948782BC83EE0EA699EF4": 0
+  }
+}

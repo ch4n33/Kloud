@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "created": "2026-10-22",
+  "platforms": ["linux/amd64", "linux/arm64"],
+  "images": [
+    {
+      "name": "blog",
+      "base": {
+        "reference": "ghcr.io/ch4n33/blog@sha256:28ac1bbd95b2225ff345776b34ab7b08258fc5e41bca8d4a44d6467ef1a7f65c",
+        "platforms": {
+          "linux/amd64": "sha256:5b8d29c8789104f0570b799262c3bf69f901377655bf639b8f701aa71bb320bd",
+          "linux/arm64": "sha256:eeb55f73dc6ddffdca6998f87d7d92379bd47d9b085a1a9793ac426529d25719"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-blog@sha256:a96f430b8a36ff19705c4db2fda455e9c191b00f421ae7ab94eb8275f7f19eaa",
+        "platforms": {
+          "linux/amd64": "sha256:0e9de74edab3f1aa8ad41a4a2899eaf1eea9b77230187b87d5947af41ccc0ed2",
+          "linux/arm64": "sha256:7406c581683eed4d8096c626b7f169944b8e9717ed86f5caba3772ea6867f3cd"
+        }
+      }
+    },
+    {
+      "name": "character-sites",
+      "base": {
+        "reference": "ghcr.io/ch4n33/character-sites@sha256:61e2c17481b80ee74391e01eafd9efed5c77f05aa81158eff1043b9e98086b71",
+        "platforms": {
+          "linux/amd64": "sha256:f7c8415b965b77187ffcf708250d9e07cea274820969bbcf6c1218e1332bdd69",
+          "linux/arm64": "sha256:e5bebcf8c0b1084c4083c8f733da88a0d488c1777561aa785450f372b6055f70"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-character-sites@sha256:13478004209a7e5dcadda61a292816756e716e29bda4ca7043e2f6a9a0fc7ce1",
+        "platforms": {
+          "linux/amd64": "sha256:c45b52ae38ff5badc0c7532ac41fb5ef3dcf9f6c6a1a5a1a65ee44dea56a689a",
+          "linux/arm64": "sha256:a20e04d344c79de52ecadbd59fbb5cf1d327e39c5be8fa0f20de41c02360a424"
+        }
+      }
+    },
+    {
+      "name": "couchdb",
+      "base": {
+        "reference": "docker.io/library/couchdb@sha256:307a3f5276f64c0db28f226b7b5c180b8f2c851afa681cfb4fbb1b1fe7fd5587",
+        "platforms": {
+          "linux/amd64": "sha256:e99f02d9e4742707e405b21443cd0a356c00d04a1bf8cf77577eebd1dc3868b3",
+          "linux/arm64": "sha256:939b4086d52e5a787945bed1caf85ee3411ebd26f3d26121942529aa6c3c0ae6"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-couchdb@sha256:bfa55d5011aa46045d6ed9857958493fcdcde4e483ceecec400dce029df5189d",
+        "platforms": {
+          "linux/amd64": "sha256:1f43073a4776ed9112bda6323d64eb4540a20c624eaf5ed11c188e6efd4bef6d",
+          "linux/arm64": "sha256:83fc0f5a82b33a23c06c90953d9d6825236482cce1e1974e99f63f58210ce4be"
+        }
+      }
+    },
+    {
+      "name": "sample-app",
+      "base": {
+        "reference": "ghcr.io/ch4n33/sample-app@sha256:0fe51a1e48108105b749279d41fc1f72eed6561d3f6c65bf442c44ac1928eb8e",
+        "platforms": {
+          "linux/amd64": "sha256:9563ee012f4697c3644077b1ea2c996833b5cb49fd27626a6b4b4cc25a548dbf",
+          "linux/arm64": "sha256:deb1b3ba487a901a98f1d387c57b87085bf2fbba931520665c1dd426b4044ab8"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-sample-app@sha256:164779efacd983b7b46c8f38ccb80dbc44c24c5d5a6fdd6f559dcdd4e480ee10",
+        "platforms": {
+          "linux/amd64": "sha256:d5a4d8d1c455caa7bf07651ceb09a8015fe7216ae81a6d5d86405b500d603adc",
+          "linux/arm64": "sha256:3e371e2cc69669dcc7750b46bd322672f61f991866b800331164f3d32736633e"
+        }
+      }
+    }
+  ]
+}

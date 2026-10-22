@@ -1,0 +1,320 @@
+{
+  "schemaVersion": 1,
+  "targets": [
+    {
+      "namespace": "cert-manager",
+      "kind": "Deployment",
+      "name": "cert-manager",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "cert-manager-controller",
+          "source": "quay.io/jetstack/cert-manager-controller:v1.20.0",
+          "component": "cert-manager-controller"
+        }
+      ]
+    },
+    {
+      "namespace": "cert-manager",
+      "kind": "Deployment",
+      "name": "cert-manager-cainjector",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "cert-manager-cainjector",
+          "source": "quay.io/jetstack/cert-manager-cainjector:v1.20.0",
+          "component": "cert-manager-cainjector"
+        }
+      ]
+    },
+    {
+      "namespace": "cert-manager",
+      "kind": "Deployment",
+      "name": "cert-manager-webhook",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "cert-manager-webhook",
+          "source": "quay.io/jetstack/cert-manager-webhook:v1.20.0",
+          "component": "cert-manager-webhook"
+        }
+      ]
+    },
+    {
+      "namespace": "kloud-metrics",
+      "kind": "Deployment",
+      "name": "grafana",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "grafana",
+          "source": "grafana/grafana:11.6.0",
+          "component": "grafana"
+        }
+      ]
+    },
+    {
+      "namespace": "kloud-metrics",
+      "kind": "Deployment",
+      "name": "prometheus",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "prometheus",
+          "source": "prom/prometheus:v3.2.1",
+          "component": "prometheus"
+        }
+      ]
+    },
+    {
+      "namespace": "kloud-vpn",
+      "kind": "Deployment",
+      "name": "wg-easy",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "kube-api-proxy",
+          "source": "alpine/socat:latest",
+          "component": "socat"
+        },
+        {
+          "section": "containers",
+          "name": "ssh-proxy",
+          "source": "alpine/socat:latest",
+          "component": "socat"
+        }
+      ]
+    },
+    {
+      "namespace": "kube-system",
+      "kind": "Deployment",
+      "name": "coredns",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "coredns",
+          "source": "rancher/mirrored-coredns-coredns:1.14.2",
+          "component": "coredns"
+        }
+      ]
+    },
+    {
+      "namespace": "kube-system",
+      "kind": "Deployment",
+      "name": "local-path-provisioner",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "local-path-provisioner",
+          "source": "rancher/local-path-provisioner:v0.0.35",
+          "component": "local-path-provisioner"
+        }
+      ]
+    },
+    {
+      "namespace": "kube-system",
+      "kind": "Deployment",
+      "name": "metrics-server",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "metrics-server",
+          "source": "rancher/mirrored-metrics-server:v0.8.1",
+          "component": "metrics-server"
+        }
+      ]
+    },
+    {
+      "namespace": "kube-system",
+      "kind": "Deployment",
+      "name": "traefik",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "traefik",
+          "source": "rancher/mirrored-library-traefik:3.6.10",
+          "component": "traefik"
+        }
+      ]
+    },
+    {
+      "namespace": "metallb-system",
+      "kind": "Deployment",
+      "name": "metallb-controller",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "controller",
+          "source": "quay.io/metallb/controller:v0.15.3",
+          "component": "metallb-controller"
+        }
+      ]
+    },
+    {
+      "namespace": "kloud-metrics",
+      "kind": "DaemonSet",
+      "name": "cadvisor",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "cadvisor",
+          "source": "gcr.io/cadvisor/cadvisor:v0.55.1",
+          "component": "cadvisor"
+        }
+      ]
+    },
+    {
+      "namespace": "kloud-metrics",
+      "kind": "DaemonSet",
+      "name": "node-exporter",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "node-exporter",
+          "source": "prom/node-exporter:latest",
+          "component": "node-exporter"
+        }
+      ]
+    },
+    {
+      "namespace": "kloud-metrics",
+      "kind": "DaemonSet",
+      "name": "promtail",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "promtail",
+          "source": "grafana/promtail:3.4.2",
+          "component": "promtail"
+        }
+      ]
+    },
+    {
+      "namespace": "metallb-system",
+      "kind": "DaemonSet",
+      "name": "metallb-speaker",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "speaker",
+          "source": "quay.io/metallb/speaker:v0.15.3",
+          "component": "metallb-speaker"
+        },
+        {
+          "section": "containers",
+          "name": "frr",
+          "source": "quay.io/frrouting/frr:10.4.1",
+          "component": "frr"
+        },
+        {
+          "section": "containers",
+          "name": "reloader",
+          "source": "quay.io/frrouting/frr:10.4.1",
+          "component": "frr"
+        },
+        {
+          "section": "containers",
+          "name": "frr-metrics",
+          "source": "quay.io/frrouting/frr:10.4.1",
+          "component": "frr"
+        },
+        {
+          "section": "initContainers",
+          "name": "cp-frr-files",
+          "source": "quay.io/frrouting/frr:10.4.1",
+          "component": "frr"
+        },
+        {
+          "section": "initContainers",
+          "name": "cp-reloader",
+          "source": "quay.io/metallb/speaker:v0.15.3",
+          "component": "metallb-speaker"
+        },
+        {
+          "section": "initContainers",
+          "name": "cp-metrics",
+          "source": "quay.io/metallb/speaker:v0.15.3",
+          "component": "metallb-speaker"
+        }
+      ]
+    },
+    {
+      "namespace": "kloud-metrics",
+      "kind": "StatefulSet",
+      "name": "loki",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "loki",
+          "source": "grafana/loki:3.4.2",
+          "component": "loki"
+        }
+      ]
+    },
+    {
+      "namespace": "kloud-apps",
+      "kind": "Deployment",
+      "name": "blog",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "blog",
+          "source": "ghcr.io/ch4n33/blog:latest",
+          "component": "blog"
+        }
+      ]
+    },
+    {
+      "namespace": "kloud-apps",
+      "kind": "Deployment",
+      "name": "character-sites",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "character-sites",
+          "source": "ghcr.io/ch4n33/character-sites:433b48639c1c0fe22a97c40b8a2fc547b951822a",
+          "component": "character-sites"
+        }
+      ]
+    },
+    {
+      "namespace": "kloud-apps",
+      "kind": "Deployment",
+      "name": "minecraft",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "minecraft",
+          "source": "itzg/minecraft-server",
+          "component": "minecraft"
+        }
+      ]
+    },
+    {
+      "namespace": "kloud-apps",
+      "kind": "Deployment",
+      "name": "obsidian-couchdb",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "couchdb",
+          "source": "couchdb:3.3",
+          "component": "couchdb"
+        }
+      ]
+    },
+    {
+      "namespace": "kloud-apps",
+      "kind": "Deployment",
+      "name": "sample-app",
+      "containers": [
+        {
+          "section": "containers",
+          "name": "sample-app",
+          "source": "ghcr.io/ch4n33/sample-app:464a97cb9136afaa9dabe047c8fdbce249cbb253",
+          "component": "sample-app"
+        }
+      ]
+    }
+  ]
+}

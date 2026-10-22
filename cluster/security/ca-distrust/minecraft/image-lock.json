@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "created": "2026-10-22",
+  "platforms": [
+    "linux/amd64",
+    "linux/arm64"
+  ],
+  "images": [
+    {
+      "name": "minecraft",
+      "base": {
+        "reference": "docker.io/itzg/minecraft-server@sha256:c48371a15bd94774e4c96af3971023dae3f5179bdd814ff65b606b76d894ac95",
+        "platforms": {
+          "linux/amd64": "sha256:693c76531cf0db14008044f492d3174be77b85c310067504f2e2c6fbbf017641",
+          "linux/arm64": "sha256:3882d373fbe9af3f5f16055599b4cadd6804fc3e4286b2765e19ed25ae0055f8"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-minecraft-security@sha256:c286b31a3f71bd1b42a5a07399b54c2160246e55c484be442244728f87cf04db",
+        "platforms": {
+          "linux/amd64": "sha256:87759efb100ea186a19335e0480a6e94ac7fdf09a43bb4b3d94b1e4b477cfa89",
+          "linux/arm64": "sha256:3ed53dceaffddc762662599cf573685116d1a3dce585dfb06128d428b27a7322"
+        }
+      }
+    }
+  ]
+}

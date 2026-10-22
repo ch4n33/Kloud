@@ -1,0 +1,299 @@
+{
+  "schemaVersion": 1,
+  "created": "2026-10-22",
+  "platforms": [
+    "linux/amd64",
+    "linux/arm64"
+  ],
+  "images": [
+    {
+      "name": "cadvisor",
+      "base": {
+        "reference": "gcr.io/cadvisor/cadvisor@sha256:3de2bd5203120b866d74a9b283b2ffb8ec382fbf9dc321814700c6ea6f44ec57",
+        "platforms": {
+          "linux/amd64": "sha256:9cc0da1192a4d0cd3597d16cdc3c625b8cc5636cee201f3d122c8331e1a01069",
+          "linux/arm64": "sha256:52d1a5b3408835f84dc2dc579d91fc28d3cf235fc6ba94cd2a913d5475b275d8"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-cadvisor@sha256:4152889e3721ccb1945a396a3919dbef63e88570359348e249ab4f4356e568e0",
+        "platforms": {
+          "linux/amd64": "sha256:3a3ce96ee8002829d343ae0c10dab687a7aeb937c0a22ca93651ea39d86d48a8",
+          "linux/arm64": "sha256:a18f8c117dac66b3775d60108191ccfb9960154c478158df8bc6da04298e6077"
+        }
+      }
+    },
+    {
+      "name": "cert-manager-cainjector",
+      "base": {
+        "reference": "quay.io/jetstack/cert-manager-cainjector@sha256:6a620381d99583d886e8ce745c872f638bcfc854964ad95d657eec2048a6dca1",
+        "platforms": {
+          "linux/amd64": "sha256:ddbed11f6ff0d72692811dd78a26775592a8436b9cefd1071ad1cb26f26f533f",
+          "linux/arm64": "sha256:435c8f2c32a65177d6d1b5daa97b4da53f9de172f4fcc77a412043d01f7adce6"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-cert-manager-cainjector@sha256:5311aa4960eb0826f438a3b69f42886943caf121df8cbe80b792cb14d329d884",
+        "platforms": {
+          "linux/amd64": "sha256:018a86a0194d48334a370de60c58082aed2c6185e7e93b69ce679edcd922de5f",
+          "linux/arm64": "sha256:82d37a0b69d71f257ff86ff12e2123850d1b16eea4dc203d69219de031db6339"
+        }
+      }
+    },
+    {
+      "name": "cert-manager-controller",
+      "base": {
+        "reference": "quay.io/jetstack/cert-manager-controller@sha256:b9009aa6b45b59da1363a26dab15aee7d77c7ce01ac2c1cf05ecd1121462db16",
+        "platforms": {
+          "linux/amd64": "sha256:af0cac0906ef524c2657da07fe5bd39dd58bbc737817229e048d47363a1dd4f3",
+          "linux/arm64": "sha256:e4beb9c5bccb658dedf8d2229ee29df4658bab957ee9a4aea5d103c62fe2db99"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-cert-manager-controller@sha256:d7ec1ada0b049394730eb62e5eafb0ab285b51f4f9ec5c936e95448b7902ec42",
+        "platforms": {
+          "linux/amd64": "sha256:2873ff714f45e01f8323939938063865bb92ddc638ad920d5c3d58cc875f99a7",
+          "linux/arm64": "sha256:99e4ec1005617ba5ccacbb1095131206bfa163492ee9aa4d8dfe9e5f03e26096"
+        }
+      }
+    },
+    {
+      "name": "cert-manager-webhook",
+      "base": {
+        "reference": "quay.io/jetstack/cert-manager-webhook@sha256:2133daae1f08ad54bcfd317f4a19b48e2bba1c490dbf04e74c4666b3d5d6a69b",
+        "platforms": {
+          "linux/amd64": "sha256:4026403e02e370243fefd692714d25cafbf22e34288ffe51e80066d01496d485",
+          "linux/arm64": "sha256:43f0f8d7e52e181ef815059b932ee36a92650d47f4a930a1600d203a6eb303fe"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-cert-manager-webhook@sha256:b62ae6b39287bbc3a1e6422a60aba5d41c2b95bf4b71ca262c7a2cbd3f2d30a3",
+        "platforms": {
+          "linux/amd64": "sha256:d7c4078cf62105abe6b76ae9e38ae5e7acbcb4921b278d24aa02d580b7a57615",
+          "linux/arm64": "sha256:daccf8e748e9f34b35fab31555dd6cc2827e1e30d951c8e9a912ae7e2a2741e4"
+        }
+      }
+    },
+    {
+      "name": "coredns",
+      "base": {
+        "reference": "rancher/mirrored-coredns-coredns@sha256:e7e6440cfd1e919280958f5b5a6ab2b184d385bba774c12ad2a9e1e4183f90d9",
+        "platforms": {
+          "linux/amd64": "sha256:fd5079792b93909db3adefa91e41c3995455013394f0197c7346786ae19079fc",
+          "linux/arm64": "sha256:3c5a66ca0d50fbd3ddb862857ce2a01a9d74dd409aea4b1fde83a9c68c598754"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-coredns@sha256:9087953dd4815797cf1badade8f7c4366eecf20f9a131a56e78d9e810abf1968",
+        "platforms": {
+          "linux/amd64": "sha256:1344d0a24b4692cbafb150addca4cb4efbcbc51efb56b13a4da5ee1b04204ed5",
+          "linux/arm64": "sha256:ec1f92069813055488694b177ff87dce1be05398b9e5b6cd515b06e7c3d4c349"
+        }
+      }
+    },
+    {
+      "name": "frr",
+      "base": {
+        "reference": "quay.io/frrouting/frr@sha256:97a281a1473cae1f762ceab87cbcc53a2e102053877421e8b4606422aae45442",
+        "platforms": {
+          "linux/amd64": "sha256:f1dd8182ca8ebd76421378702b95d1553fd7285d63db170640eefeb6f989c9dd",
+          "linux/arm64": "sha256:d574e2837ff3256147814c9c502200624266caeb47b7c421c43c48559444c832"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-frr@sha256:c078811d4dfd289c43bb4f4d07c6f98fbc15621d5cb284597150154429785c5e",
+        "platforms": {
+          "linux/amd64": "sha256:c67eea8d25fb099cbd07f9f9d46b087595234c0fc0982c48099ccb3847fcee82",
+          "linux/arm64": "sha256:2b238321ee3ae41f5a532fc985d7e4abd71d29b8390da70f4e99afce14b485ad"
+        }
+      }
+    },
+    {
+      "name": "grafana",
+      "base": {
+        "reference": "docker.io/grafana/grafana@sha256:62d2b9d20a19714ebfe48d1bb405086081bc602aa053e28cf6d73c7537640dfb",
+        "platforms": {
+          "linux/amd64": "sha256:b739cda4b61ba3b90707578b643a22cd851fecf4498e6c6ec2d8f9d622a5d0b2",
+          "linux/arm64": "sha256:c5bb8837eb70910907d8df3a11d0c489bd9e0f761cb67261e8d7d6af0724ddf3"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-grafana@sha256:d513bab238d9aa61d1ffd65547f61f68a31d0ac8122688a05f35361303c80203",
+        "platforms": {
+          "linux/amd64": "sha256:32c2eea1fc2bfc8fb399497cbe4a2986ae6d8f0f2b6c5e8803087319288045ff",
+          "linux/arm64": "sha256:1e846611b3fc42f5ccbe23864b37d989faf0c32ba7567ea11f3eb45c00fa90f5"
+        }
+      }
+    },
+    {
+      "name": "local-path-provisioner",
+      "base": {
+        "reference": "rancher/local-path-provisioner@sha256:34ff0847cc47ebf69656ba44a3de9324596d0036b66ffd323b21614dd8221530",
+        "platforms": {
+          "linux/amd64": "sha256:b8b3e3f87a91dc09d73af57a176d78fe12d3b777a5e88787059d2d93daa500aa",
+          "linux/arm64": "sha256:ebdabcb364129e861f44c929bafa8395f4d9462eb5a4d7ee7dcbe1a92b587939"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-local-path-provisioner@sha256:435c660ff8fc5adf6ec8be282ae1d10f6510301581d7028d2e66b5c5214d027d",
+        "platforms": {
+          "linux/amd64": "sha256:67d54793fa2d200f8690d941985602a55944a50898b556e176d50c89c382bed1",
+          "linux/arm64": "sha256:be7ea706f4576ed9323dbf4cd582fa9517a3c2704914e54e7b3b2af24c89aaa4"
+        }
+      }
+    },
+    {
+      "name": "loki",
+      "base": {
+        "reference": "docker.io/grafana/loki@sha256:58a6c186ce78ba04d58bfe2a927eff296ba733a430df09645d56cdc158f3ba08",
+        "platforms": {
+          "linux/amd64": "sha256:776847cc648cf21d309560fb9fde98dc0454156be0ababf252bbfca07dadf8af",
+          "linux/arm64": "sha256:6b700283427c74169ae31e20ae2673f4bdd13a652879e9213cd336e02fabeb4a"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-loki@sha256:780855e97f2381b60e93696f0d956a8040a2d187c6bb87f3a047d26673595984",
+        "platforms": {
+          "linux/amd64": "sha256:158f1a3a8d9af82f8f2b5949186b151431a11915f1897bd6d412a114c3100acb",
+          "linux/arm64": "sha256:767dd91479ad3aedd711991e82e9c857607f1110ccda43ba180dab9e46a1be0c"
+        }
+      }
+    },
+    {
+      "name": "metallb-controller",
+      "base": {
+        "reference": "quay.io/metallb/controller@sha256:6698ccc54c380913816ed1fd0758637ec87dd79da419c4ab170a2c26c158ab89",
+        "platforms": {
+          "linux/amd64": "sha256:d3ba4f65898d57a96d3c04d0c601a4af342537ac48b4e9f92275d39eb7d59436",
+          "linux/arm64": "sha256:45f53870d5b21cbe44ce99366d440a84cf7bca12340687e4b70f908685ed1ba9"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-metallb-controller@sha256:0b2021d297a661e5a94f5c63474bd783e5f00f4d3eea1e32e073d2e8b11a2616",
+        "platforms": {
+          "linux/amd64": "sha256:9efa0ac1c18af484f32c14d8f661616e8648e9f71a3adf791e70737636e4a409",
+          "linux/arm64": "sha256:df48e295fa54908f248160d7bfa87bae2bd280e5a7ef86d736e7271c746875e1"
+        }
+      }
+    },
+    {
+      "name": "metallb-speaker",
+      "base": {
+        "reference": "quay.io/metallb/speaker@sha256:c6a5b25b2e1fba610a57b2db4bb8141d7c133569d561a8cc29e38ca5113efbc4",
+        "platforms": {
+          "linux/amd64": "sha256:3993ca11d3f7feec50530aadf8240b1123b3742b4b97d590f47a62f129e92129",
+          "linux/arm64": "sha256:2a9381af67baf249ba6e546c35b8b9a3434991e52f7795c81bb95f4e4bfde211"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-metallb-speaker@sha256:30028c4148e04d4998d9962e75155f79ab467a71afc83fcf2afa73a024006179",
+        "platforms": {
+          "linux/amd64": "sha256:90eb3e82dde908b09e0b57397ea0ee67dbb976c0ee7bfe08966549c9785c5c0e",
+          "linux/arm64": "sha256:2971d10b96d24e536c4cb85fed13e616e1e0ce1bd9e7627aa34dfbca06e1f7b8"
+        }
+      }
+    },
+    {
+      "name": "metrics-server",
+      "base": {
+        "reference": "rancher/mirrored-metrics-server@sha256:b2d2efaf5ac3b366ed0f839d2412a2c4279d4fc2a2a733f12c52133faed36c41",
+        "platforms": {
+          "linux/amd64": "sha256:6231fb0a1ffab76c92ab880f51a0d11b290f688373647bcedff85af025dfd8a9",
+          "linux/arm64": "sha256:9ece07f21cfaf3c2398bd4e0de1f127cfad23ec40d29ceffd8323b4f34744eb8"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-metrics-server@sha256:991b27c77068b312cb0ca9fe02bf45926854946807242f3d05c46f1b28518360",
+        "platforms": {
+          "linux/amd64": "sha256:ddda26ff3c8400d995836484f36d2f2f17f878126711bee4c6b9247e8a774e6a",
+          "linux/arm64": "sha256:d8b113b23dcdd7deb27e6c66ebe836caf2d2cd93b99bcdcec88ffc0cbe641a26"
+        }
+      }
+    },
+    {
+      "name": "node-exporter",
+      "base": {
+        "reference": "docker.io/prom/node-exporter@sha256:e9cff4fc67b1818f8c97adb115b9f12c9a54b533de86765d4a0effc01b357205",
+        "platforms": {
+          "linux/amd64": "sha256:fbd8062b4529e166e902bd62cd93de2f48b36d50af942620d419657265bc20b1",
+          "linux/arm64": "sha256:ffe5988c95f16df7e44e47d1b9129e304081723273d000c415ae38b4c02fc7e5"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-node-exporter@sha256:4cd055f7dd4e86720df2a3996f11f391f62e220e94788d0d4d109ed82dd5bc35",
+        "platforms": {
+          "linux/amd64": "sha256:4ce740bb0f27239c4c3a20b2737cbf4bc102e83f2e0708225980aabd6d1fc214",
+          "linux/arm64": "sha256:3b9f4f8eeadf921e7761aeacd81e57027d5fba48574b0c19af23ae1b0703c074"
+        }
+      }
+    },
+    {
+      "name": "prometheus",
+      "base": {
+        "reference": "docker.io/prom/prometheus@sha256:6927e0919a144aa7616fd0137d4816816d42f6b816de3af269ab065250859a62",
+        "platforms": {
+          "linux/amd64": "sha256:5d34817348f69ddb956be509cafa4d4c2b5ecbbb5b786dd99d5a62e686b2ece4",
+          "linux/arm64": "sha256:641f5faf625e3c667e2fb75b89a8a1dbc59a564f982f725fffb314f9293ab150"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-prometheus@sha256:ef86b0e46f9bd694ecc98d4fe315fab16e4352c504f271f5f1d2d666167406c9",
+        "platforms": {
+          "linux/amd64": "sha256:17870055465354093c0420eba4476ae9734a16cd89fb1b0cee850721af9e44be",
+          "linux/arm64": "sha256:1f60c67fdcd9a755904a357df9fed83555f783de631c2acb1ef50de6492a0fb4"
+        }
+      }
+    },
+    {
+      "name": "promtail",
+      "base": {
+        "reference": "docker.io/grafana/promtail@sha256:c6e9a987ca086cbfef945b8ebd708eb09f98b5e78bfb659e4e5a8b3bd604d11b",
+        "platforms": {
+          "linux/amd64": "sha256:f601884f47230b8fc5550a87c55914c2b0b693594293c09ad66b2bcaf5da3ef8",
+          "linux/arm64": "sha256:7f0189648c78113a83126254af161acc9ef789d8e8cc5f19fb19fdd8173487bd"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-promtail@sha256:1934ff4526415e65592eb8168d68a66d9b19650be91974dd7f544873fe6c2eff",
+        "platforms": {
+          "linux/amd64": "sha256:e34c6c20a96bb359b704172838fdce16985ee35a608728216f1aeb2662571d62",
+          "linux/arm64": "sha256:d678b1cfa2ae4f2828c259d9627648be227ed3399e9b163b2d4f847ddd80dd5a"
+        }
+      }
+    },
+    {
+      "name": "socat",
+      "base": {
+        "reference": "docker.io/alpine/socat@sha256:22d77becaeeea8ef56b8c4bb2312323acafe85354be6a85714ff5050e3537842",
+        "platforms": {
+          "linux/amd64": "sha256:c3fd2a0733ac5e45d1274a525334634ac88fb6ea0487b7128d172b7c0bd58753",
+          "linux/arm64": "sha256:ddd23445c3b0c1914781af91c618a749c613789cfea4e6e3a50e97d25ad02789"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-socat@sha256:206bc23cd9d8a66c373d1994378f4d2351ff0de92875bc94b3f38c2c1b54ebdb",
+        "platforms": {
+          "linux/amd64": "sha256:abfeb4da809a0ba29133c9d2a5d46e4e2157ab480aff8e5b0b47aefd36c70364",
+          "linux/arm64": "sha256:56b074d6c4af55938d3593b09297906f67a96c78425223d9e0726ea874da7d4b"
+        }
+      }
+    },
+    {
+      "name": "traefik",
+      "base": {
+        "reference": "rancher/mirrored-library-traefik@sha256:c549d482c55d7a797398562064f35428cc53e748d84d7190997930e7b31bcc32",
+        "platforms": {
+          "linux/amd64": "sha256:e1ca9744b6f23332f00a41b20fdd9903501e5428f17138a3a9c3e98e2d272ec1",
+          "linux/arm64": "sha256:1a87097051e6b8e0d8a3d374c60f5239d6329f041a1bd9cdba0344c07644a6ca"
+        }
+      },
+      "output": {
+        "reference": "ghcr.io/ch4n33/kloud-ca-traefik@sha256:3fd6929db540eb41f221741893b16d4d85841c9ddd14e3ef35c72494fb697663",
+        "platforms": {
+          "linux/amd64": "sha256:c812a4ee8e9d8f86fe642e866d6d296c464544ecea8e8f560c663bda9f83ad06",
+          "linux/arm64": "sha256:0470c9ba0f7d3421a4157adf45bb5c3afbc4ee9e2e7446f3e5f9c705652271a3"
+        }
+      }
+    }
+  ]
+}

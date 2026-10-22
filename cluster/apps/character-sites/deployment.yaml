@@ -14,9 +14,11 @@ spec:
         app: character-sites
     spec:
       # 멀티아키텍처 nginx 이미지라 Ryzen(amd64), Pi(arm64) 양쪽에서 실행 가능
+      imagePullSecrets:
+        - name: ghcr-ch4n33
       containers:
         - name: character-sites
-          image: ghcr.io/ch4n33/character-sites:latest
+          image: ghcr.io/ch4n33/kloud-ca-character-sites@sha256:13478004209a7e5dcadda61a292816756e716e29bda4ca7043e2f6a9a0fc7ce1
           ports:
             - containerPort: 80
           livenessProbe:

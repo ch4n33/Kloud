@@ -13,9 +13,11 @@ spec:
       labels:
         app: blog
     spec:
+      imagePullSecrets:
+        - name: ghcr-ch4n33
       containers:
         - name: blog
-          image: ghcr.io/ch4n33/blog:latest
+          image: ghcr.io/ch4n33/kloud-ca-blog@sha256:a96f430b8a36ff19705c4db2fda455e9c191b00f421ae7ab94eb8275f7f19eaa
           ports:
             - containerPort: 80
           livenessProbe:

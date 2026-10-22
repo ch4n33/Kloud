@@ -16,11 +16,14 @@ spec:
       labels:
         app: minecraft
     spec:
+      imagePullSecrets:
+        - name: ghcr-ch4n33
       nodeSelector:
         kubernetes.io/hostname: ch4n33-server
+      terminationGracePeriodSeconds: 120
       containers:
         - name: minecraft
-          image: itzg/minecraft-server
+          image: ghcr.io/ch4n33/kloud-minecraft-security@sha256:c286b31a3f71bd1b42a5a07399b54c2160246e55c484be442244728f87cf04db
           ports:
             - containerPort: 25565
           env:

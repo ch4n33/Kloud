@@ -24,7 +24,7 @@ spec:
             - "k3s.kloud.rche.moe"
       containers:
         - name: runner
-          image: ghcr.io/ch4n33/kloud-runner-security@sha256:5e46c8a0efe6610d3d75afc04c2857ebf061d62cff0c4687ba5c0a417cf3adbf
+          image: ghcr.io/ch4n33/kloud-runner-security@sha256:e36d1ca8878c5e23b55fde1b3eb40a30b80fb056a97186c45c95326d2f31ff07
           env:
             - name: RUNNER_NAME
               value: kloud-devtools

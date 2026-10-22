@@ -5,6 +5,35 @@ FROM node:24.22.1-alpine@sha256:feb76650b7195319268c59cb2d419c732d6c499b13bf5296
 
 FROM myoung34/github-runner@sha256:496fc149257920c24ee01154d4d88cf247dd584b68f4d25edffecd41ec9ad2ff
 
+# Focal ESM 패치 대신 영향을 받은 두 인증서만 지문으로 확인해 제외한다.
+RUN set -eu; \
+    fingerprint() { \
+      openssl x509 -in "$1" -noout -fingerprint -sha256 \
+        | sed 's/.*=//;s/://g' \
+        | tr '[:lower:]' '[:upper:]'; \
+    }; \
+    comodo=/usr/share/ca-certificates/mozilla/Comodo_AAA_Services_root.crt; \
+    emsign=/usr/share/ca-certificates/mozilla/emSign_ECC_Root_CA_-_G3.crt; \
+    test "$(fingerprint "$comodo")" = D7A7A0FB5D7E2731D771E9484EBCDEF71D5F0C3E0A2948782BC83EE0EA699EF4; \
+    test "$(fingerprint "$emsign")" = 86A1ECBA089C4A8D3BBE2734C612BA341D813E043CF9E8A862CD5C57A36BBE6B; \
+    grep -Fxq mozilla/Comodo_AAA_Services_root.crt /etc/ca-certificates.conf; \
+    grep -Fxq mozilla/emSign_ECC_Root_CA_-_G3.crt /etc/ca-certificates.conf; \
+    sed -i \
+      -e 's|^mozilla/Comodo_AAA_Services_root\.crt$|!&|' \
+      -e 's|^mozilla/emSign_ECC_Root_CA_-_G3\.crt$|!&|' \
+      /etc/ca-certificates.conf; \
+    update-ca-certificates --fresh; \
+    grep -Fxq '!mozilla/Comodo_AAA_Services_root.crt' /etc/ca-certificates.conf; \
+    grep -Fxq '!mozilla/emSign_ECC_Root_CA_-_G3.crt' /etc/ca-certificates.conf; \
+    for cert in "$comodo" "$emsign"; do \
+      if openssl verify -CAfile /etc/ssl/certs/ca-certificates.crt "$cert" >/dev/null 2>&1; then \
+        echo "Affected root remains trusted by CA bundle: $cert" >&2; exit 1; \
+      fi; \
+      if openssl verify -CApath /etc/ssl/certs "$cert" >/dev/null 2>&1; then \
+        echo "Affected root remains trusted by CApath: $cert" >&2; exit 1; \
+      fi; \
+    done
+
 # Actions 실행과 사용자 셸 명령에 보안 패치 런타임을 사용한다.
 COPY --from=node24-glibc /usr/local/bin/node /actions-runner/externals/node24/bin/node
 COPY --from=node24-glibc /usr/local/bin/node /actions-runner/externals/node20/bin/node
@@ -15,4 +44,6 @@ COPY --from=node24-glibc /usr/local/bin/node /usr/bin/node
 COPY --from=node24-musl /usr/local/bin/node /actions-runner/externals/node24_alpine/bin/node
 COPY --from=node24-musl /usr/local/bin/node /actions-runner/externals/node20_alpine/bin/node
 
-ENV FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true
+ENV FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true \
+    PIP_CERT=/etc/ssl/certs/ca-certificates.crt \
+    REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt

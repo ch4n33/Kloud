@@ -14,9 +14,11 @@ spec:
         app: sample-app
     spec:
       # nodeSelector 없음 — Ryzen(amd64) + Pi(arm64) 양쪽에 배포하여 멀티아키텍처 검증
+      imagePullSecrets:
+        - name: ghcr-ch4n33
       containers:
         - name: sample-app
-          image: ghcr.io/ch4n33/sample-app:latest
+          image: ghcr.io/ch4n33/kloud-ca-sample-app@sha256:164779efacd983b7b46c8f38ccb80dbc44c24c5d5a6fdd6f559dcdd4e480ee10
           ports:
             - containerPort: 8080
           livenessProbe:

@@ -14,9 +14,11 @@ spec:
     spec:
       hostNetwork: true
       hostPID: true
+      imagePullSecrets:
+        - name: ghcr-ch4n33
       containers:
         - name: node-exporter
-          image: prom/node-exporter:latest
+          image: ghcr.io/ch4n33/kloud-ca-node-exporter@sha256:4cd055f7dd4e86720df2a3996f11f391f62e220e94788d0d4d109ed82dd5bc35
           ports:
             - containerPort: 9100
               hostPort: 9100
