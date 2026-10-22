@@ -18,6 +18,11 @@ spec:
       serviceAccountName: github-runner
       nodeSelector:
         kubernetes.io/hostname: ch4n33-server
+      # API 이름을 확인된 내부 관리 주소로 고정한다.
+      hostAliases:
+        - ip: "192.168.50.18"
+          hostnames:
+            - "k3s.kloud.rche.moe"
       containers:
         - name: runner
           image: ghcr.io/ch4n33/kloud-runner-security@sha256:5e46c8a0efe6610d3d75afc04c2857ebf061d62cff0c4687ba5c0a417cf3adbf
